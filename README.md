@@ -1,3 +1,2 @@
- https://github.com/FortAwesome/vue-fontawesome
- 
- @fortawesome/vue-fontawesome@prerelease
+
+typora收费了，不满意市面上的笔记管理软件，所以自己造一个简单的markdwon笔记编辑器
