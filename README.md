@@ -1,2 +1,3 @@
-# simple-note
-简单的md编辑器
+ https://github.com/FortAwesome/vue-fontawesome
+ 
+ @fortawesome/vue-fontawesome@prerelease
