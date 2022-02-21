@@ -2,7 +2,7 @@
   <!-- <div id="tool-bar" style="background: #5f5e5e; height: 5%; font-size: 25px">
     <font-awesome-icon :icon="['far', 'eye']" />
   </div> -->
-  <div class="home" style="height: 600px; background: #c0c">
+  <div class="home" style="height: 680px; background: #c0c">
     <textarea v-model="content" id="editor" placeholder="开始你的书写"></textarea>
   </div>
 </template>
@@ -12,7 +12,7 @@ import { defineComponent, onMounted } from "vue";
 //@ts-ignore
 import CodeMirror from "codemirror";
 import "codemirror/lib/codemirror.css";
-import "codemirror/theme/eclipse.css";
+import "codemirror/theme/darcula.css";
 
 import "codemirror/mode/gfm/gfm";
 import "codemirror/mode/markdown/markdown";
@@ -34,7 +34,7 @@ onMounted(() => {
       viewportMargin: Infinity,
       lineNumbers: true,
       mode: "gfm",
-      theme: "eclipse",
+      theme: "darcula",
       matchBrackets: true, //括号匹配
       foldGutter: true,
       styleActiveLine: true, // 选中行高亮
@@ -55,7 +55,7 @@ onMounted(() => {
 .CodeMirror {
   font-family: "Fira Code", Consolas, Menlo, Monaco, "Lucida Console", "Liberation Mono",
     "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace, serif !important;
-  border: 1px solid #eee;
+  /* border: 1px solid #eee; */
   height: 100%;
 }
 

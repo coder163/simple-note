@@ -3,6 +3,10 @@
     margin: 0;
 }
 
+ul, ol {
+    list-style: none;
+}
+
 .layout-body {
     display: flex;
     flex-direction: column;
@@ -10,7 +14,7 @@
 
 .layout-header {
     flex: 1;
-    box-shadow: 0px 10px 10px -10px #333;
+
 
 }
 
@@ -29,7 +33,7 @@
     /* 两个边栏的宽度 */
     background-color: red;
     flex: 0 0;
-    min-width: 40px;
+
 }
 
 .layout-side-left {
@@ -39,54 +43,6 @@
 
 }
 
-.layout-side-left-menu {
-
-    background: #f2f2f2;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-}
-
-
-.layout-side-left-menu-item {
-    padding: 10px;
-    display: flex;
-    /* border-bottom: 1px solid #000; */
-    writing-mode: vertical-rl;
-    width: 100%;
-    text-align: center;
-    align-items: center;
-    -webkit-writing-mode: vertical-rl;
-    -ms-writing-mode: vertical-rl;
-    font-family: "Fira Code"
-}
-
-.layout-side-left-menu-item span {
-    margin-top: 5px;
-}
-
-
-.layout-side-left-menu-item:last-child {
-    /* border-bottom: none; */
-}
-
-.layout-side-left-menu-item:hover {
-    /* border-bottom: 1px solid #007acc; */
-    /* color: #007acc; */
-    background-color: #d9d9d9;
-    cursor: pointer;
-
-}
-
-
-
-.actvie {
-    /* border-bottom: 1px solid #007acc; */
-    color: #007acc;
-
-}
 
 /*********************************顶部导航**********************************/
 
@@ -95,10 +51,7 @@
     align-items: center;
     justify-content: space-between;
     background: #f2f2f2;
-
-
     height: 35px;
-
     box-shadow: 12px 12px 15px #000;
 }
 
