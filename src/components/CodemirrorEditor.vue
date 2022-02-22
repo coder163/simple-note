@@ -2,7 +2,7 @@
   <!-- <div id="tool-bar" style="background: #5f5e5e; height: 5%; font-size: 25px">
     <font-awesome-icon :icon="['far', 'eye']" />
   </div> -->
-  <div class="home" style="height: 680px; background: #c0c">
+  <div class="home" style="height: 180px; background: #c0c">
     <textarea v-model="content" id="editor" placeholder="开始你的书写"></textarea>
   </div>
 </template>

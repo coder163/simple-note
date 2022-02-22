@@ -1,84 +1,73 @@
 <template>
-  <div id="layout-side-left-menu">
-    <div class="icon-tool">
-      <ul class="top">
-        <li>
-          <a
-            href="#"
-            :class="{ actvie: actvieLabel == 'bars' }"
-            @click="telescopic('bars')"
-          >
-            <font-awesome-icon icon="bars" size="lg" />
-          </a>
-        </li>
+  <div class="icon-tool">
+    <ul class="top">
+      <li>
+        <a
+          href="#"
+          :class="{ actvie: actvieLabel == 'bars' }"
+          @click="telescopic('bars')"
+        >
+          <font-awesome-icon icon="bars" size="lg" />
+        </a>
+      </li>
 
-        <li>
-          <a
-            href="#"
-            :class="{ actvie: actvieLabel == 'cloud-arrow-down' }"
-            @click="telescopic('cloud-arrow-down')"
-            ><font-awesome-icon icon="cloud-arrow-down" size="lg"
-          /></a>
-        </li>
-        <li>
-          <a
-            href="#"
-            :class="{ actvie: actvieLabel == 'rss' }"
-            @click="telescopic('rss')"
-          >
-            <font-awesome-icon icon="rss" @click="telescopic('rss')" size="lg"
-          /></a>
-        </li>
-      </ul>
-      <ul class="bottom">
-        <li>
-          <a
-            href="#"
-            :class="{ actvie: actvieLabel == 'cog' }"
-            @click="telescopic('cog')"
-          >
-            <font-awesome-icon icon="cog" size="lg" />
-          </a>
-        </li>
-      </ul>
-    </div>
-    <div class="nav-tree" ref="iconTool">iconTool</div>
+      <li>
+        <a
+          href="#"
+          :class="{ actvie: actvieLabel == 'cloud-arrow-down' }"
+          @click="telescopic('cloud-arrow-down')"
+          ><font-awesome-icon icon="cloud-arrow-down" size="lg"
+        /></a>
+      </li>
+      <li>
+        <a href="#" :class="{ actvie: actvieLabel == 'rss' }" @click="telescopic('rss')">
+          <font-awesome-icon icon="rss" @click="telescopic('rss')" size="lg"
+        /></a>
+      </li>
+    </ul>
+    <ul class="bottom">
+      <li>
+        <a href="#" :class="{ actvie: actvieLabel == 'cog' }" @click="telescopic('cog')">
+          <font-awesome-icon icon="cog" size="lg" />
+        </a>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from "@vue/runtime-dom";
+import { onMounted, ref } from "@vue/runtime-dom";
 
 let iconTool: any = ref();
 let actvieLabel = ref<string>("bars");
-
+//子组件向父组件事件传递
+const emit = defineEmits(["actvie"]);
 onMounted(() => {
   iconTool = ref(document.querySelector(".nav-tree"));
-  iconTool.value.style.width = "300px";
+  // iconTool.value.style.width = "300px";
 });
 
 function telescopic(label: string = "bars") {
+  emit("actvie", actvieLabel.value, label);
   actvieLabel.value = label;
-  console.log(actvieLabel);
-  let width = iconTool.value.style.width;
-  if (width == "300px" || width == "") {
-    iconTool.value.style.width = "0px";
-  } else {
-    iconTool.value.style.width = "300px";
-  }
+
+  // let width = iconTool.value.style.width;
+  // if (width == "100%" || width == "") {
+  //   iconTool.value.style.width = "0";
+  // } else {
+  //   iconTool.value.style.width = "100%";
+  // }
 }
 </script>
 <style lang="scss">
 #layout-side-left-menu {
-  background: #808080;
+  background: #f0f;
+  // width: 100%;
   height: 100%;
   display: flex;
-  padding: 0;
-  margin: 0;
 }
 #layout-side-left-menu .icon-tool {
   width: 40px;
-  background: #808080;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -98,8 +87,8 @@ function telescopic(label: string = "bars") {
 }
 #layout-side-left-menu .nav-tree {
   transition: width 500ms;
-  background: #fff;
-  width: 0;
+  background: #f00;
+  width: 100%;
 }
 
 #layout-side-left-menu .icon-tool a {
