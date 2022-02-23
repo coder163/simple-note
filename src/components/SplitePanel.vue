@@ -51,10 +51,12 @@ let lengthType = computed(() => {
 // 滑动器宽度 （px）
 let triggerLength: number = 10;
 // 鼠标距滑动器左(顶)侧偏移量
-let triggerLeftOffset: number = 0;
+let triggerLeftOffset: number = 140;
 
 let paneLengthValue = computed(() => {
-  return `calc(${paneLength.value}% - ${triggerLength / 2 + "px"})`;
+  // return `calc(${paneLength.value}% - ${triggerLength / 2 + "px"})`;
+
+  return `${paneLength.value - triggerLength / 2}px`;
 });
 
 let triggerLengthValue = computed(() => {
@@ -63,7 +65,7 @@ let triggerLengthValue = computed(() => {
 
 let splitPane = ref<HTMLElement | null>();
 //组件暴露自己的属性
-// defineExpose({ paneLength });
+defineExpose({ paneLength });
 //子组件向父组件事件传递
 const emit = defineEmits(["update"]);
 
@@ -83,24 +85,20 @@ function handleMouseDown(e: MouseEvent) {
 function handleMouseMove(e: MouseEvent) {
   let clientRect: DOMRect | undefined = splitPane.value?.getBoundingClientRect();
   if (clientRect) {
-    let percent = 0;
+    // let percent = 0;
+    let offset = 0;
     if (direction === "row") {
-      let offset = e.pageX - clientRect.left - triggerLeftOffset + triggerLength / 2;
-      percent = (offset / clientRect.width) * 100;
+      offset = e.pageX - clientRect.left - triggerLeftOffset + triggerLength / 2;
+      // percent = (offset / clientRect.width) * 100;
     } else {
-      let offset = e.pageY - clientRect.top - triggerLeftOffset + triggerLength / 2;
-      percent = (offset / clientRect.height) * 100;
-    }
-    //边界
-    if (percent < props.min || percent > props.max) {
-      //   console.log("边界");
-      return;
+      offset = e.pageY - clientRect.top - triggerLeftOffset + triggerLength / 2;
+      // percent = (offset / clientRect.height) * 100;
     }
 
-    // console.log("拖动中");
-    paneLength.value = percent;
+    console.log("拖动中", offset);
+    paneLength.value = offset;
     //触发事件
-    emit("update", paneLength.value);
+    // emit("update", paneLength.value);
   }
 }
 // 松开滑动器

@@ -17,28 +17,3 @@ ul, ol {
 
 
 }
-
-.layout-main {
-    display: flex;
-    flex: 1;
-}
-
-.layout-content {
-    flex: 1;
-    background-color: #000;
-    height: 100%;
-}
-
-.layout-side-right, .layout-side-left {
-    /* 两个边栏的宽度 */
-    background-color: red;
-    flex: 0 0;
-
-}
-
-.layout-side-left {
-    /* 导航放到最左边 */
-    justify-content: center;
-    order: -1;
-
-}
