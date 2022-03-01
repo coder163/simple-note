@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, Menu } from 'electron'
+import { app, protocol, BrowserWindow, Menu, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -9,10 +9,10 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
-
+let win: BrowserWindow;
 async function createWindow() {
   // Create the browser window.
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 1200,
     height: 735,
     frame: false,//添加这一行采用无边框窗口
@@ -83,3 +83,30 @@ if (isDevelopment) {
     })
   }
 }
+
+
+
+
+import { ChannelMessage } from "@/main/domain/message";
+//窗口最大化
+ipcMain.on(ChannelMessage.WINDOW_OPERATION, function (e, operation) {
+
+  switch (operation) {
+    case 'minimize':
+      win.minimize();
+      break;
+    case 'maximize':
+ 
+       if (win.isMaximized()) {
+        win.restore();
+      } else {
+        win.maximize();
+      }
+      break;
+    case 'close':
+        win.destroy()
+        app.quit();
+  }
+
+})
+

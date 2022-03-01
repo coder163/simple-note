@@ -1,4 +1,16 @@
 {
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "LSP": {
+    "LSP-volar": {
+      "initializationOptions": {
+        "typescript.serverPath": "${typescript_tsdk}/tsserverlibrary.js"
+      }
+    }
+  },
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",

@@ -4,7 +4,9 @@
 
     <splitpanes class="default-theme">
       <pane v-for="i in 3" :key="i">
-        <div><HelloWorld msg="Welcome to Your Vue.js + TypeScript App" /></div>
+        <div>
+          <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+        </div>
       </pane>
     </splitpanes>
   </div>
