@@ -66,7 +66,7 @@ function handleMouseMove(e: MouseEvent) {
 	// //禁用动画
 	// istransition.value = false;
 	let clientRect: DOMRect | undefined = SplitPanel.value?.getBoundingClientRect();
-	console.log(clientRect)
+	// console.log(clientRect)
 	if (clientRect) {
 		let offset = e.pageX - clientRect.left + triggerWidth / 2;
 		PanelWidth.value = offset;

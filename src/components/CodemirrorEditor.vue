@@ -25,7 +25,11 @@ require('codemirror/mode/clike/clike.js')
 require('codemirror/mode/markdown/markdown.js')
 require('codemirror/addon/edit/continuelist.js')
 require('codemirror/addon/selection/active-line.js')
-// theme: "darcula",
+//滚动条
+require('codemirror/addon/scroll/simplescrollbars.js')
+require('codemirror/addon/scroll/simplescrollbars.css')
+
+// 
 let option = {
 	/* 在此添加其他编辑器选项 */
 	theme: 'hypermd-light',
@@ -33,14 +37,16 @@ let option = {
 	highlightFormatting: true,
 	// 高亮行功能
 	styleActiveLine: true,
-	maxBlockquoteDepth: 3
+
+	//滚动条""
+	// scrollbarStyle:'native'
 }
 onMounted(() => {
 	let editor = document.getElementById("editor");
 	let cm = HyperMD.fromTextArea(editor, option)
 
 	HyperMD.switchToHyperMD(cm, option)
-	init_toc(cm)
+	// init_toc(cm)
 })
 function init_toc(cm) {
 	var $toc = document.getElementById('toc')
@@ -64,11 +70,12 @@ function init_toc(cm) {
 			newTOC += '<div data-line="' + lineNo + '" class="toc-item" style="padding-left:' + level + 'em">' + title + '</div>'
 		})
 		if (newTOC == lastTOC) return
+		//@ts-ignore
 		$toc.innerHTML = lastTOC = newTOC
 	}, 300)
 
 	cm.on('changes', update)
-
+	//@ts-ignore
 	$toc.addEventListener('click', function (ev) {
 		var t = ev.target
 		//@ts-ignore
@@ -90,23 +97,7 @@ function init_toc(cm) {
 		"Courier New", monospace, serif !important;
 	height: 100% !important;
 
-	/* 滚动条宽度 */
-
-	.CodeMirror-vscrollbar,.CodeMirror-hscrollbar {
-		right: 4px;
-		border-radius: 5px;
-		background-color: #cce5f9 !important;
-		width: 10px;
-		opacity: 0.75;
-	}
-	::-webkit-scrollbar-thumb
-	{
-	      right: 4px;
-	  border-radius: 5px;
-	  background-color: #3495e8!important;
-	  width: 10px;
-	  opacity: 0.75;
-	}
+	
 }
 
 .editor-tool {
