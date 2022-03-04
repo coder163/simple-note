@@ -1,87 +1,95 @@
 <template>
-    <div id="div-tree">
-        <ul class="tree-list">
-          <!--TODO 依然没有下级菜单的数据 -->
-            <tree-item @expand-node="expandNode" v-for="item in nodes" :nodes="nodes"></tree-item>
-        </ul>
-    </div>
+  <div id="div-tree">
+    <ul class="tree-list">
+      <li class="item" v-for="(item, index) in nodes" :key="index">
+        <div
+          class="mode"
+          :class="{ 'item-active': item.selected }"
+          @click="expandNode(item)"
+        >
+          <font-awesome-icon :icon="getIcon(item)" />
+          <span class="item-name">{{ item.label }}</span>
+        </div>
+        <tree :nodes="item.child" v-if="item.expand" @selectedNode="outExpandNode"></tree>
+      </li>
+      <!--  -->
+    </ul>
+  </div>
 </template>
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import TreeItem from "./TreeItem.vue";
- const { ipcRenderer} = window.require("electron");
-const nodes =ref();
-  nodes.value=[
-        {
-            label:'测试数据1',
-            id: 1,
-            expand: false,
-            child:[
-                {
-                label:'测试数据1-1',
-                id: 1,
-                child:[{}]
-                },
-                 {
-                label:'测试数据1-2',
-                id: 1,
-                child:[]
-                }
+const { ipcRenderer } = window.require("electron");
 
-            ]
-        }
+const emit = defineEmits(["selectedNode", "selectedNode1"]);
 
-  ]
-onMounted(()=>{
-  
-       ipcRenderer.on('open-dir',function(event: any,args:any){
-           // nodes.value= args;
-       })
-})
-function expandNode(curItem:any){
-   
-    //已经展开的话什么都不做
-    if(curItem.expand){
-        return ;
-    }
-    reset(nodes.value);
-    curItem.expand=true;
+const props = defineProps({
+  nodes: null,
+});
+
+let list = ref<any>();
+
+onMounted(() => {
+  list.value = props.nodes;
+});
+function expandNode(curItem: any) {
+  if (curItem.child) {
+    curItem.expand = !curItem.expand;
+  } else {
+    reset(props.nodes);
+    curItem.selected = true;
+
+    emit("selectedNode", curItem);
+  }
 }
-function reset(list:Array<any>){
-    //@ts-i
-   list.forEach((value,index)=>{
-        value.expand=false;
+function outExpandNode(curItem: any) {
+  emit("selectedNode", curItem);
+}
+function getIcon(item: any) {
+  if (item.child) {
+    if (item.expand) {
+      return ["far", "folder-open"];
+    }
+    return ["fas", "folder-plus"];
+  }
+  return ["far", "file-lines"];
+}
 
-        if(value.child){
-           reset(value.child);
-        }
-    })
+function reset(list: Array<any>) {
+  //@ts-i
+  list.forEach((value, index) => {
+    value.selected = false;
+    value.expand = false;
+    if (value.child) {
+      reset(value.child);
+    }
+  });
 }
 </script>
 <style lang="scss">
 #div-tree {
-    width: 100%;
-    // background-color: #0fa;
+  width: 100%;
+  // background-color: #0fa;
 }
 .tree-list {
-    // background-color: #0cc;
-    margin-left: 10px;
-    .item {
-        line-height: 30px;
-        .item-name {
-            margin-left: 10px;
-        }
-        .svg-inline--fa {
-            color: #72787e;
-        }
+  // background-color: #0cc;
+  margin-left: 10px;
+  .item {
+    line-height: 30px;
+    .item-name {
+      margin-left: 10px;
     }
-    .item:hover {
-        background-color: #e0e4e6;
-        opacity: 0.8;
-        cursor: pointer;
+    .svg-inline--fa {
+      color: #72787e;
     }
+  }
+  .mode:hover {
+    background-color: #e0e4e6;
+    opacity: 0.8;
+    cursor: pointer;
+  }
 }
 .item-active {
-    background-color: #c7cbd1 !important;
+  background-color: #c7cbd1 !important;
 }
 </style>

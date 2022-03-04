@@ -1,86 +1,86 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, Menu, MenuItemConstructorOptions,MenuItem,ipcMain,OpenDialogOptions,dialog} from 'electron'
+import { app, protocol, BrowserWindow, Menu, MenuItemConstructorOptions, MenuItem, ipcMain, OpenDialogOptions, dialog } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // let 
 
-let template: Array<(MenuItemConstructorOptions) | (MenuItem)>= [
+let template: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
 
-{
+  {
 
- label: '文件',
- submenu: [{
-    label: '打开文件',
-    accelerator: 'CmdOrCtrl+O',
-    click() {
-      console.log('aaaaa')
+    label: '文件',
+    submenu: [{
+      label: '打开文件',
+      accelerator: 'CmdOrCtrl+O',
+      click() {
+        console.log('aaaaa')
+      }
+    }, {
+      label: '打开文件夹',
+      accelerator: 'CmdOrCtrl+Shift+O',
+      click: function (item: MenuItem, focusedWindow: BrowserWindow | undefined) {
+
+        let properties: OpenDialogOptions = { properties: ['openDirectory'] }
+
+        dialog.showOpenDialog(win, properties).then(result => {
+          if (result.filePaths.length > 0 && !result.canceled) {
+            let files = listFiles(result.filePaths[0]);
+
+            win.webContents.send('open-dir', files)
+
+          }
+        })
+
+      }
+
+
+
+
+
+    }, {
+      label: '新建文件',
+      accelerator: 'CmdOrCtrl+N',
+      role: 'cut'
+    },
+    {
+      label: '新建文件夹',
+      accelerator: 'CmdOrCtrl+Shift+N',
+      role: 'cut'
+    }, {
+      type: 'separator'
     }
-  }, {
-    label: '打开文件夹',
-    accelerator: 'CmdOrCtrl+Shift+O',
-    click:function(item: MenuItem, focusedWindow: BrowserWindow|undefined){
-
-				let properties: OpenDialogOptions = { properties: ['openDirectory']}
-		         
-		    dialog.showOpenDialog(win, properties).then(result => {
-		          if (result.filePaths.length > 0 && !result.canceled) {
-		            let files = listFiles(result.filePaths[0]);
-		           
-		            win.webContents.send('open-dir', files)
-
-		          }
-		        })
-
-    }
-   
-  
-
-		 
-    
-  }, {
-    label: '新建文件',
-    accelerator: 'CmdOrCtrl+N',
-    role: 'cut'
+    ]
   },
- {
-    label: '新建文件夹',
-    accelerator: 'CmdOrCtrl+Shift+N',
-    role: 'cut'
-  }, {
-    type: 'separator'
-  }
-  ]
-},
-{
-	 label: '工具',
-},
+  {
+    label: '工具',
+  },
 
-{
-	 label: '设置',
-}
-,
-{
-	 label: '帮助',
-	 submenu: [{
-    label: '提交Bug',
-  
-  }, {
-    type: 'separator'
-  }, {
-    label: '官方文档',
- 
-  }, {
-    label: '关于版本',
-   
+  {
+    label: '设置',
   }
-  ]
-}
+  ,
+  {
+    label: '帮助',
+    submenu: [{
+      label: '提交Bug',
+
+    }, {
+      type: 'separator'
+    }, {
+      label: '官方文档',
+
+    }, {
+      label: '关于版本',
+
+    }
+    ]
+  }
 ]
 const appMenu = Menu.buildFromTemplate(template);
-  
+
 // 菜单模板
 const menuTemplate: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
   {
@@ -120,16 +120,16 @@ ipcMain.on('menu', (ev, arg) => {
  * @return {Array<string>}          指定目录下的文件集合
  */
 function listFiles(pathName: string): Array<string> {
-	const fs=require('fs');
+  const fs = require('fs');
 
   // let arrFiles = Array<string>();
 
   const files = fs.readdirSync(pathName)
 
-    //定义结构
-    let nodes= Array<any>();
+  //定义结构
+  let nodes = Array<any>();
 
-//TODO 要好好研究一下
+  //TODO 重新定义下数据格式
 
   for (let i = 0; i < files.length; i++) {
     const item = files[i]
@@ -140,15 +140,15 @@ function listFiles(pathName: string): Array<string> {
     if (stat.isDirectory()) {
 
       // arrFiles = arrFiles.concat(listFiles(pathName + '\\' + item))
-      let node= {
-            label:item,
-            path:pathName + '\\' + item,
-            id: 1,
-            expand: false,
-            child:[{}]
-        }
-        nodes.push(node)
-    } else{
+      let node = {
+        label: item,
+        path: pathName + '\\' + item,
+        id: 1,
+        expand: false,
+        child: [{}]
+      }
+      nodes.push(node)
+    } else {
       /* 获取的是所有的txt和ini文件
       var reg = /^.*\.md$/
       if (reg.test(item) ) { 
@@ -156,27 +156,27 @@ function listFiles(pathName: string): Array<string> {
 
       } */
 
-           let node= {
-                  label:item,
-                  id: 1,
-                  path:pathName + '\\' + item
-                
-              }
-        nodes.push(node)
-    
+      let node = {
+        label: item,
+        id: 1,
+        path: pathName + '\\' + item
+
+      }
+      nodes.push(node)
+
     }
 
     // else {
     //   var reg = /^.*\.md$/
     //   if (reg.test(item) ) { /* 获取的是所有的txt和ini文件 */
     //     arrFiles.push(pathName + '\\' + item)
-       
+
     //      nodes.push(node)
     //   }
     // }
-   
+
   }
-   // console.log(nodes);
+  // console.log(nodes);
   return nodes
 }
 
@@ -202,7 +202,7 @@ async function createWindow() {
 
     }
   })
-   Menu.setApplicationMenu(appMenu);
+  Menu.setApplicationMenu(appMenu);
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string)
@@ -259,7 +259,7 @@ if (isDevelopment) {
   }
 }
 
-  
+
 
 
 
@@ -272,16 +272,16 @@ ipcMain.on(ChannelMessage.WINDOW_OPERATION, function (e, operation) {
       win.minimize();
       break;
     case 'maximize':
- 
-       if (win.isMaximized()) {
+
+      if (win.isMaximized()) {
         win.restore();
       } else {
         win.maximize();
       }
       break;
     case 'close':
-        win.destroy()
-        app.quit();
+      win.destroy()
+      app.quit();
   }
 
 })
