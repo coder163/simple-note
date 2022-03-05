@@ -15,9 +15,24 @@ let template: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
     submenu: [{
       label: '打开文件',
       accelerator: 'CmdOrCtrl+O',
-      click() {
-        console.log('aaaaa')
+      click: function (item: MenuItem, focusedWindow: BrowserWindow | undefined) {
+
+        let properties: OpenDialogOptions = { properties: ['openFile'] }
+
+        dialog.showOpenDialog(win, properties).then(result => {
+          if (result.filePaths.length > 0 && !result.canceled) {
+            //console.log(result.filePaths[0])
+            let path = result.filePaths[0]
+
+            const fs = require("fs");
+
+            win.webContents.send('read-file', fs.readFileSync(path, "utf8"))
+
+          }
+        })
+
       }
+
     }, {
       label: '打开文件夹',
       accelerator: 'CmdOrCtrl+Shift+O',
@@ -27,7 +42,10 @@ let template: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
 
         dialog.showOpenDialog(win, properties).then(result => {
           if (result.filePaths.length > 0 && !result.canceled) {
-            let files = listFiles(result.filePaths[0]);
+            //console.log(result.filePaths[0])
+            let path = result.filePaths[0]
+
+            let files = listFiles(path);
 
             win.webContents.send('open-dir', files)
 
@@ -119,9 +137,11 @@ ipcMain.on('menu', (ev, arg) => {
  * @param  {string}        pathName 路径
  * @return {Array<string>}          指定目录下的文件集合
  */
+
+//  import { v4 as uuidv4 } from 'uuid';
 function listFiles(pathName: string): Array<string> {
   const fs = require('fs');
-
+  const { v4: uuidv4 } = require('uuid');
   // let arrFiles = Array<string>();
 
   const files = fs.readdirSync(pathName)
@@ -129,39 +149,29 @@ function listFiles(pathName: string): Array<string> {
   //定义结构
   let nodes = Array<any>();
 
-  //TODO 重新定义下数据格式
 
   for (let i = 0; i < files.length; i++) {
     const item = files[i]
-    const stat = fs.lstatSync(pathName + '\\' + item)
-
-
-
+    const stat = fs.lstatSync(pathName + '/' + item)
     if (stat.isDirectory()) {
 
       // arrFiles = arrFiles.concat(listFiles(pathName + '\\' + item))
       let node = {
         label: item,
-        path: pathName + '\\' + item,
-        id: 1,
+        path: pathName + '/' + item,
+        id: uuidv4(),
         expand: false,
         child: [{}]
       }
       nodes.push(node)
     } else {
-      /* 获取的是所有的txt和ini文件
-      var reg = /^.*\.md$/
-      if (reg.test(item) ) { 
-    
-
-      } */
-
       let node = {
         label: item,
-        id: 1,
-        path: pathName + '\\' + item
-
+        id: uuidv4(),
+        path: pathName + '/' + item,
+        selected: false
       }
+
       nodes.push(node)
 
     }
@@ -286,4 +296,24 @@ ipcMain.on(ChannelMessage.WINDOW_OPERATION, function (e, operation) {
 
 })
 
+//测试
+ipcMain.on('init-dir', function (event, path) {
+  let files = listFiles(path);
 
+  win.webContents.send('open-dir', files)
+})
+
+
+//    ipcRenderer.send("open-child-dir", curItem.path);
+ipcMain.on('open-child-dir', function (event, path, id) {
+  let files = listFiles(path);
+
+  win.webContents.send('open-child-dir', id, files)
+})
+
+ipcMain.on('read-file', function (event, path) {
+
+  const fs = require("fs");
+
+  win.webContents.send('read-file', fs.readFileSync(path, "utf8"))
+})

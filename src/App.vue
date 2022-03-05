@@ -6,12 +6,12 @@
         <side></side>
         <tree v-bind:nodes="list" @selectedNode="openFile"></tree>
         <!-- -->
-        <button @click="ch">aaa</button>
-        <child v-bind:name="name"></child>
+        <!-- <button @click="ch">aaa</button> -->
+        <!-- <child v-bind:name="name"></child> -->
       </div>
     </template>
     <template v-slot:after>
-      <codemiirror-editor></codemiirror-editor>
+      <codemiirror-editor v-bind:content="content"></codemiirror-editor>
     </template>
   </split-panel>
 </template>
@@ -27,38 +27,34 @@ import { onMounted, ref } from "vue";
 
 const { ipcRenderer } = window.require("electron");
 let name = ref("xiaoming");
-let list = ref([
-  {
-    label: "测试数据1",
-    id: 1,
-    expand: true,
-
-    child: [
-      {
-        label: "测试数据1-1",
-        id: 1,
-      },
-      {
-        label: "测试数据1-2",
-        id: 1,
-        selected: true,
-      },
-    ],
-  },
-]);
-
+let list = ref();
+let content = ref();
 let winHeight = ref<number>(document.documentElement.clientHeight);
+//测试数据
+ipcRenderer.send("init-dir", "/run/media/dancingcode/软件/创作笔记/研修堂");
 
 onMounted(() => {
   ipcRenderer.on("open-dir", function (event: any, args: any) {
+    console.log(args);
     list.value = args;
+  });
+  ipcRenderer.on("read-file", function (event: any, args: any) {
+    content.value = args;
+  });
+
+  ipcRenderer.on("open-child-dir", function (event: any, id: any, fileList: any) {
+    for (let i = 0; i < list.value.length; i++) {
+      if (list.value[i].id === id) {
+        list.value[i].child = fileList;
+      }
+    }
   });
 
   window.addEventListener(
     "resize",
     function () {
       winHeight.value = document.documentElement.clientHeight;
-      console.log(winHeight.value);
+      // console.log(winHeight.value);
     },
     false
   );
@@ -105,6 +101,13 @@ function ch() {
 }
 function openFile(curItem: any) {
   console.log("父组件", curItem);
+
+  let { path, id } = curItem;
+  if (curItem.expand) {
+    ipcRenderer.send("open-child-dir", path, id);
+    return;
+  }
+  ipcRenderer.send("read-file", path);
 }
 </script>
 

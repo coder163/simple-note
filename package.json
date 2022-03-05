@@ -21,8 +21,8 @@
     "hypermd": "^0.3.11",
     "katex": "^0.15.2",
     "marked": "^4.0.12",
+    "uuid": "^8.3.2",
     "vue": "^3.0.0",
-
     "vue-router": "^4.0.0-0"
   },
   "devDependencies": {

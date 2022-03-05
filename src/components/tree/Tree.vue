@@ -33,14 +33,14 @@ onMounted(() => {
   list.value = props.nodes;
 });
 function expandNode(curItem: any) {
+  // console.log(curItem);
   if (curItem.child) {
     curItem.expand = !curItem.expand;
   } else {
     reset(props.nodes);
     curItem.selected = true;
-
-    emit("selectedNode", curItem);
   }
+  emit("selectedNode", curItem);
 }
 function outExpandNode(curItem: any) {
   emit("selectedNode", curItem);
