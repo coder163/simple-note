@@ -47,7 +47,10 @@ let option = {
   highlightFormatting: true,
   // 高亮行功能
   styleActiveLine: true,
+	hmdReadLink:{
 
+	baseURI:'file:///run/media/dancingcode/软件/创作笔记/研修堂/'
+	}
   //滚动条""
   // scrollbarStyle:'native'
 };
