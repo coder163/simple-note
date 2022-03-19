@@ -10,16 +10,17 @@
           <font-awesome-icon :icon="getIcon(item)" />
           <span class="item-name">{{ item.label }}</span>
         </div>
-        <tree :nodes="item.child" v-if="item.expand" @selectedNode="outExpandNode"></tree>
+        <tree
+          :nodes="item.child"
+          v-if="item.hasChildren && item.expand"
+          @selectedNode="outExpandNode"
+        ></tree>
       </li>
-      <!--  -->
     </ul>
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref, watch } from "vue";
-import TreeItem from "./TreeItem.vue";
-const { ipcRenderer } = window.require("electron");
+import { onMounted, ref, watch } from "vue";
 
 const emit = defineEmits(["selectedNode", "selectedNode1"]);
 
@@ -33,37 +34,19 @@ onMounted(() => {
   list.value = props.nodes;
 });
 function expandNode(curItem: any) {
-  // console.log(curItem);
-  if (curItem.child) {
-    curItem.expand = !curItem.expand;
-  } else {
-    reset(props.nodes);
-    curItem.selected = true;
-  }
   emit("selectedNode", curItem);
 }
 function outExpandNode(curItem: any) {
   emit("selectedNode", curItem);
 }
 function getIcon(item: any) {
-  if (item.child) {
+  if (item.hasChildren) {
     if (item.expand) {
       return ["far", "folder-open"];
     }
     return ["fas", "folder-plus"];
   }
   return ["far", "file-lines"];
-}
-
-function reset(list: Array<any>) {
-  //@ts-i
-  list.forEach((value, index) => {
-    value.selected = false;
-    value.expand = false;
-    if (value.child) {
-      reset(value.child);
-    }
-  });
 }
 </script>
 <style lang="scss">

@@ -2,64 +2,69 @@
   <div id="icon-tool">
     <ul class="top">
       <li>
-        <a
-          href="#"
-          :class="{ actvie: actvieLabel == 'bars' }"
-          @click="telescopic('bars')"
-        >
-          <font-awesome-icon icon="bars" size="lg" />
+        <a :class="{ actvie: actvieLabel == 'book' }" @click="telescopic('book')">
+          <font-awesome-icon icon="book" size="lg" />
         </a>
       </li>
 
       <li>
         <a
-          href="#"
-          :class="{ actvie: actvieLabel == 'cloud-arrow-down' }"
-          @click="telescopic('cloud-arrow-down')"
+          to="/outline"
+          :class="{ actvie: actvieLabel == 'bars' }"
+          @click="telescopic('bars')"
         >
-          <font-awesome-icon icon="cloud-arrow-down" size="lg" />
+          <font-awesome-icon icon="bars" size="lg" />
+          <!-- <font-awesome-icon icon="cloud-arrow-down" size="lg" /> -->
         </a>
       </li>
-      <li>
+      <!-- <li>
         <a href="#" :class="{ actvie: actvieLabel == 'rss' }" @click="telescopic('rss')">
           <font-awesome-icon icon="rss" @click="telescopic('rss')" size="lg" />
         </a>
-      </li>
+      </li> -->
     </ul>
-    <ul class="bottom">
+    <!-- <ul class="bottom">
       <li>
         <a href="#" :class="{ actvie: actvieLabel == 'cog' }" @click="telescopic('cog')">
           <font-awesome-icon icon="cog" size="lg" />
         </a>
       </li>
-    </ul>
+    </ul> -->
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "@vue/runtime-dom";
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 let iconTool: any = ref();
-let actvieLabel = ref<string>("bars");
+let actvieLabel = ref<string>("book");
+
 //子组件向父组件事件传递
 const emit = defineEmits(["actvie"]);
 onMounted(() => {
   iconTool = ref(document.querySelector(".nav-tree"));
-  // iconTool.value.style.width = "300px";
 });
 
-function telescopic(label: string = "bars") {
+function telescopic(label: string = "book") {
+  if (label == "book") {
+    console.log("telescopic book");
+    router.push({
+      path: "/",
+    });
+  }
+  if (label == "bars") {
+    router.push({
+      path: "/outline",
+    });
+  }
   emit("actvie", actvieLabel.value, label);
   actvieLabel.value = label;
-
-  // let width = iconTool.value.style.width;
-  // if (width == "100%" || width == "") {
-  //   iconTool.value.style.width = "0";
-  // } else {
-  //   iconTool.value.style.width = "100%";
-  // }
 }
 </script>
+
 <style lang="scss">
 #icon-tool {
   background: #72787e;

@@ -2,12 +2,11 @@
   <textarea id="editor"></textarea>
 </template>
 <script lang="ts" setup>
+import { fstat } from "original-fs";
 import { onMounted, watch, ref } from "vue";
+import { useStore } from "vuex";
 
 let HyperMD = require("hypermd");
-
-// hypermd 模块会引入 codemirror 和一堆 css 文件
-
 // 如果需要为特殊元素添加语法高亮，请载入对应的模式
 require("codemirror/mode/htmlmixed/htmlmixed"); // Markdown 内嵌HTML
 require("codemirror/mode/stex/stex"); // TeX 数学公式
@@ -27,94 +26,88 @@ require("codemirror/addon/selection/active-line.js");
 //滚动条
 require("codemirror/addon/scroll/simplescrollbars.js");
 require("codemirror/addon/scroll/simplescrollbars.css");
-const props = defineProps({
-  content: null,
-});
+// 引入全局实例
+//@ts-ignore
+import CodeMirror from "codemirror";
+const CompleteEmoji = require("hypermd/goods/complete-emoji");
+require("codemirror/mode/haskell/haskell");
+require("codemirror/theme/darcula.css");
+const { ipcRenderer } = window.require("electron");
 let cm: any = null;
+let fileFullPath = ref<string>();
 
-watch(
-  () => props.content,
-  (val) => {
-    // console.log(val, cm);
-    cm.setValue(val);
-  }
-);
+watch(fileFullPath, (newVal, oldVal) => {
+  let path = newVal?.substring(0, newVal.lastIndexOf("\\"));
+
+  cm.setOption("hmdReadLink", {
+    baseURI: path,
+  });
+});
+
+const store = useStore();
 
 let option = {
-  /* 在此添加其他编辑器选项 */
   theme: "hypermd-light",
-  hmdModeLoader: true,
-  highlightFormatting: true,
   // 高亮行功能
   styleActiveLine: true,
-	hmdReadLink:{
-
-	baseURI:'file:///run/media/dancingcode/软件/创作笔记/研修堂/'
-	}
+  hintOptions: {
+    hint: CompleteEmoji.createHintFunc(),
+  },
+  hmdReadLink: {
+    baseURI: "D:\\笔记整理\\Java研修录\\基础编程",
+  },
+  extraKeys: {
+    //  配置按键
+    Ctrl: "autocomplete", // 需要下面的synonyms配置
+  },
+  indentUnit: 4, // 缩进配置（默认为2）
   //滚动条""
-  // scrollbarStyle:'native'
+  scrollbarStyle: "native",
 };
-onMounted(() => {
-  let editor = document.getElementById("editor");
-  cm = HyperMD.fromTextArea(editor, option);
-
-  HyperMD.switchToHyperMD(cm, option);
-  // init_toc(cm)
+ipcRenderer.on("read-file-reply", (event: any, path: string, data: any) => {
+  cm.setValue(data);
+  document.title = path;
+  fileFullPath.value = path;
 });
-function init_toc(cm) {
-  var $toc = document.getElementById("toc");
-  var lastTOC = "";
 
-  var update = HyperMD.debounce(function () {
-    var newTOC = "";
-    cm.eachLine(function (line) {
-      var tmp = /^(#+)\s+(.+)(?:\s+\1)?$/.exec(line.text);
-      if (!tmp) return;
-      var lineNo = line.lineNo();
-      if (!cm.getStateAfter(lineNo).header) return; // double check but is not header
-      var level = tmp[1].length;
-
-      var title = tmp[2];
-      title = title.replace(/([*_]{1,2}|~~|`+)(.+?)\1/g, "$2"); // em / bold / del / code
-      title = title.replace(
-        /\\(?=.)|\[\^.+?\]|\!\[((?:[^\\\]]+|\\.)+)\](\(.+?\)| ?\[.+?\])?/g,
-        ""
-      ); // images / escaping slashes / footref
-      title = title.replace(/\[((?:[^\\\]]+|\\.)+)\](\(.+?\)| ?\[.+?\])/g, "$1"); // links
-      title = title.replace(/&/g, "&amp;");
-      title = title.replace(/</g, "&lt;");
-      newTOC +=
-        '<div data-line="' +
-        lineNo +
-        '" class="toc-item" style="padding-left:' +
-        level +
-        'em">' +
-        title +
-        "</div>";
+ipcRenderer.on("set-lineNumber", (event, lineNumber) => {
+  setTimeout(() => {
+    cm.focus();
+    cm.setCursor({
+      line: lineNumber,
+      ch: 0,
     });
-    if (newTOC == lastTOC) return;
-    //@ts-ignore
-    $toc.innerHTML = lastTOC = newTOC;
-  }, 300);
+  }, 20);
+});
 
-  cm.on("changes", update);
-  //@ts-ignore
-  $toc.addEventListener(
-    "click",
-    function (ev) {
-      var t = ev.target;
-      //@ts-ignore
-      if (!/toc-item/.test(t.className)) return;
-      //@ts-ignore
-      var lineNo = ~~t.getAttribute("data-line");
-      cm.setCursor({ line: cm.lastLine(), ch: 0 });
-      setTimeout(function () {
-        cm.setCursor({ line: lineNo, ch: 0 });
-      }, 10);
+onMounted(() => {
+  cm = HyperMD.fromTextArea(document.getElementById("editor"), option);
+  // 额外配置快捷键
+  cm.addKeyMap({
+    "Ctrl-S": function () {
+      document.title = fileFullPath.value as string;
+      let fs = window.require("fs");
+
+      fs.writeFile(fileFullPath.value, cm.getValue(), (err: any) => {
+        if (err) {
+          console.log(err);
+        }
+      });
     },
-    true
-  );
-}
+    "Ctrl-F": function () {},
+  });
+  cm.on("change", function () {
+    document.title = fileFullPath.value + "*";
+  });
+
+  cm.on("inputRead", function (cm: any, change: any) {
+    if (change.text.length === 1 && change.text[0] === ":") {
+      cm.showHint();
+    }
+  });
+
+  store.commit("updateEditor", cm);
+});
 </script>
 
 <style lang="scss">

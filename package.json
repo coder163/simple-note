@@ -16,6 +16,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.0.0",
     "@fortawesome/free-solid-svg-icons": "^6.0.0",
     "@fortawesome/vue-fontawesome": "^3.0.0-5",
+    "@he-tree/vue3": "^1.2.9",
     "codemirror": "^5.65.2",
     "core-js": "^3.6.5",
     "hypermd": "^0.3.11",
@@ -23,13 +24,16 @@
     "marked": "^4.0.12",
     "uuid": "^8.3.2",
     "vue": "^3.0.0",
-    "vue-router": "^4.0.0-0"
+    "vue-router": "^4.0.0-0",
+    "vue-virtual-tree": "^4.0.6",
+    "vuex": "^4.0.0"
   },
   "devDependencies": {
     "@types/electron-devtools-installer": "^2.2.0",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-router": "~4.5.0",
     "@vue/cli-plugin-typescript": "~4.5.0",
+    "@vue/cli-plugin-vuex": "~5.0.0",
     "@vue/cli-service": "~4.5.0",
     "@vue/compiler-sfc": "^3.0.0",
     "electron": "^13.0.0",

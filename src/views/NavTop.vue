@@ -5,46 +5,56 @@
       <!-- 简单笔记 -->
     </div>
     <ol id="nav-list">
-      <li>
+      <li @click="menu" id="main-menu">
         <font-awesome-icon icon="angle-down" />
       </li>
       <li>
-        <font-awesome-icon :icon="['fas', 'minus']"   @click="windowOperation('minimize')" />
+        <font-awesome-icon
+          :icon="['fas', 'minus']"
+          @click="windowOperation('minimize')"
+        />
       </li>
       <li>
         <!-- <font-awesome-icon :icon="['far', 'window-maximize']" /> -->
         <font-awesome-icon :icon="maximizeIcon" @click="windowOperation('maximize')" />
       </li>
       <li>
-        <font-awesome-icon icon="xmark"  @click="windowOperation('close')"/>
+        <font-awesome-icon icon="xmark" @click="windowOperation('close')" />
       </li>
     </ol>
   </div>
 </template>
 <script lang="ts" setup>
-
- import {ChannelMessage} from "@/main/domain/message";
+import { ChannelMessage } from "@/main/domain/message";
 import { ref } from "vue";
- const { ipcRenderer} = window.require("electron");
- 
- let maximizeIcon=ref(['far', 'window-restore'])
+const { ipcRenderer } = window.require("electron");
 
-   /**
-   * 窗口操作
-   */
- function windowOperation(operation: string): void {
-   
-      if(operation==='maximize' ){
-        //标题栏双击最大化触发不了
-        if( maximizeIcon.value[1]==='window-maximize'){
-           maximizeIcon.value=['far', 'window-restore']
-        }else{
-           maximizeIcon.value=['far', 'window-maximize']
-        }
-      }
-      ipcRenderer.send(ChannelMessage.WINDOW_OPERATION,operation);
+let maximizeIcon = ref(["far", "square"]);
 
+/**
+ * 窗口操作 <font-awesome-icon icon="fa-light fa-square" />
+ */
+function windowOperation(operation: string): void {
+  console.log(maximizeIcon.value[1]);
+  if (operation === "maximize") {
+    if (maximizeIcon.value[1] === "square") {
+      maximizeIcon.value = ["far", "window-restore"];
+    } else {
+      maximizeIcon.value = ["far", "square"];
+    }
   }
+  ipcRenderer.send(ChannelMessage.WINDOW_OPERATION, operation);
+}
+function menu(ev: any): void {
+  const client = {
+    //@ts-ignore
+    x: ev.clientX,
+    //@ts-ignore
+    y: ev.clientY,
+  };
+  // 把鼠标位置发送到主进程
+  ipcRenderer.send("menu", client);
+}
 </script>
 
 <style lang="css">
@@ -56,15 +66,16 @@ import { ref } from "vue";
   justify-content: space-between;
   background: #fff;
   height: 35px;
-  /* box-shadow: 12px 12px 15px #000; */
+
   -webkit-app-region: drag;
+  font-weight: 100 !important;
 }
 
 .logo {
   width: 20px;
   margin-left: 10px;
   height: auto;
-   -webkit-app-region: no-drag;
+  -webkit-app-region: no-drag;
 }
 
 #nav-list {
@@ -74,13 +85,11 @@ import { ref } from "vue";
   justify-content: space-around;
   /* width: 180px; */
   line-height: 35px;
- -webkit-app-region: no-drag;
- font-weight: 100 !important;
+  -webkit-app-region: no-drag;
+  font-weight: 100 !important;
 }
 
 #nav-list li {
-  /* outline: 1px solid #ccc; */
-  /* background-color: #0f0; */
   width: 40px;
   text-align: center;
 }

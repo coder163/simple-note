@@ -1,0 +1,64 @@
+<template>
+  <!-- https://github.com/lycHub/vue-virtual-tree -->
+  <vir-tree
+    ref="virTree"
+    :source="list"
+    :loadData="loadData"
+    @select-change="selectChange"
+  />
+</template>
+
+<script lang="ts">
+import { defineComponent, onMounted, ref } from "vue";
+import { TreeInstance, TreeNodeOptions, VirTree } from "vue-virtual-tree";
+import FileUtil from "../main/utils/FileUtil";
+import TNodeOption from "../main/domain/TNodeOption";
+
+const { ipcRenderer } = window.require("electron");
+
+export default defineComponent({
+  components: { VirTree },
+  setup() {
+    const list = ref<TreeNodeOptions[]>([]);
+    const virTree = ref<TreeInstance | null>(null);
+
+    onMounted(() => {
+      //@ts-ignore
+      list.value = FileUtil.listFiles("D:\\笔记整理");
+    });
+    function selectChange(preNode: TreeNodeOptions, curNode: TreeNodeOptions) {
+      //@ts-ignore
+      console.log("selectChange", preNode.node, curNode);
+    }
+
+    const loadData = (
+      node: TreeNodeOptions,
+      callback: (children: TreeNodeOptions[]) => void
+    ) => {
+      console.log("loadData", node);
+
+      if ((node as TNodeOption).hasChildren) {
+        const children = FileUtil.listFiles((node as TNodeOption).path as string);
+        //@ts-ignore
+        callback(children);
+      }
+    };
+    return {
+      list,
+      virTree,
+      selectChange,
+      loadData,
+    };
+  },
+});
+</script>
+
+<style>
+.vir-list {
+  max-height: 100% !important;
+  height: 100%;
+}
+.vir-tree-node:hover {
+  background-color: #cfe8fc !important;
+}
+</style>

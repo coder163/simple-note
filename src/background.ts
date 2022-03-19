@@ -2,10 +2,10 @@
 
 import { app, protocol, BrowserWindow, Menu, MenuItemConstructorOptions, MenuItem, ipcMain, OpenDialogOptions, dialog } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
-import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
-const isDevelopment = process.env.NODE_ENV !== 'production'
 
-// let 
+const isDevelopment = process.env.NODE_ENV !== 'production'
+//文件读取的工具类
+import FileUtil from '@/main/utils/fileUtil'
 
 let template: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
 
@@ -37,15 +37,13 @@ let template: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
       label: '打开文件夹',
       accelerator: 'CmdOrCtrl+Shift+O',
       click: function (item: MenuItem, focusedWindow: BrowserWindow | undefined) {
-
         let properties: OpenDialogOptions = { properties: ['openDirectory'] }
-
         dialog.showOpenDialog(win, properties).then(result => {
           if (result.filePaths.length > 0 && !result.canceled) {
             //console.log(result.filePaths[0])
             let path = result.filePaths[0]
 
-            let files = listFiles(path);
+            let files = FileUtil.listFiles(path);
 
             win.webContents.send('open-dir', files)
 
@@ -54,30 +52,8 @@ let template: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
 
       }
 
-
-
-
-
-    }, {
-      label: '新建文件',
-      accelerator: 'CmdOrCtrl+N',
-      role: 'cut'
-    },
-    {
-      label: '新建文件夹',
-      accelerator: 'CmdOrCtrl+Shift+N',
-      role: 'cut'
-    }, {
-      type: 'separator'
     }
     ]
-  },
-  {
-    label: '工具',
-  },
-
-  {
-    label: '设置',
   }
   ,
   {
@@ -97,7 +73,7 @@ let template: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
     ]
   }
 ]
-const appMenu = Menu.buildFromTemplate(template);
+
 
 // 菜单模板
 const menuTemplate: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
@@ -118,13 +94,13 @@ const menuTemplate: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
     role: 'paste'
   }
 ];
-
+const appMenu = Menu.buildFromTemplate(template);
 // 构建菜单项
 const menu = Menu.buildFromTemplate(menuTemplate);
 //监听菜单请求
 ipcMain.on('menu', (ev, arg) => {
   // 弹出上下文菜单
-  menu.popup({
+  appMenu.popup({
     x: arg.x,
     y: arg.y
   });
@@ -132,63 +108,6 @@ ipcMain.on('menu', (ev, arg) => {
 });
 
 
-/**
- * 遍历文件
- * @param  {string}        pathName 路径
- * @return {Array<string>}          指定目录下的文件集合
- */
-
-//  import { v4 as uuidv4 } from 'uuid';
-function listFiles(pathName: string): Array<string> {
-  const fs = require('fs');
-  const { v4: uuidv4 } = require('uuid');
-  // let arrFiles = Array<string>();
-
-  const files = fs.readdirSync(pathName)
-
-  //定义结构
-  let nodes = Array<any>();
-
-
-  for (let i = 0; i < files.length; i++) {
-    const item = files[i]
-    const stat = fs.lstatSync(pathName + '/' + item)
-    if (stat.isDirectory()) {
-
-      // arrFiles = arrFiles.concat(listFiles(pathName + '\\' + item))
-      let node = {
-        label: item,
-        path: pathName + '/' + item,
-        id: uuidv4(),
-        expand: false,
-        child: [{}]
-      }
-      nodes.push(node)
-    } else {
-      let node = {
-        label: item,
-        id: uuidv4(),
-        path: pathName + '/' + item,
-        selected: false
-      }
-
-      nodes.push(node)
-
-    }
-
-    // else {
-    //   var reg = /^.*\.md$/
-    //   if (reg.test(item) ) { /* 获取的是所有的txt和ini文件 */
-    //     arrFiles.push(pathName + '\\' + item)
-
-    //      nodes.push(node)
-    //   }
-    // }
-
-  }
-  // console.log(nodes);
-  return nodes
-}
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -200,7 +119,7 @@ async function createWindow() {
   win = new BrowserWindow({
     width: 1200,
     height: 735,
-    frame: true,//添加这一行采用无边框窗口
+    frame: false,//添加这一行采用无边框窗口
     webPreferences: {
       javascript: true,
       plugins: true,
@@ -212,7 +131,11 @@ async function createWindow() {
 
     }
   })
-  Menu.setApplicationMenu(appMenu);
+
+
+  Menu.setApplicationMenu(null);
+
+
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string)
@@ -224,37 +147,27 @@ async function createWindow() {
   }
 }
 
-// Quit when all windows are closed.
+
 app.on('window-all-closed', () => {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
+
   if (process.platform !== 'darwin') {
     app.quit()
   }
 })
 
 app.on('activate', () => {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
+
   if (BrowserWindow.getAllWindows().length === 0) createWindow()
 })
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
+
 app.on('ready', async () => {
-  // if (isDevelopment && !process.env.IS_TEST) {
-  //   // Install Vue Devtools
-  //   try {
-  //     await installExtension(VUEJS3_DEVTOOLS)
-  //   } catch (e) {
-  //     console.error('Vue Devtools failed to install:', e.toString())
-  //   }
-  // }
+
   createWindow()
+
 })
 
-// Exit cleanly on request from parent process in development mode.
+
 if (isDevelopment) {
   if (process.platform === 'win32') {
     process.on('message', (data) => {
@@ -271,9 +184,34 @@ if (isDevelopment) {
 
 
 
+ipcMain.on('list-dir', function (event, path) {
+  win.webContents.send('list-dir-reply', FileUtil.listFiles(path))
+})
+
+ipcMain.on('list-child-dir', function (event, path) {
+
+  let list = FileUtil.listFiles(path);
+  console.log(path)
+  win.webContents.send('list-child-dir-reply', list)
+})
+
+ipcMain.on('read-file', function (event, path) {
+
+  const fs = require("fs");
+  let data = fs.readFileSync(path, "utf8");
+
+  win.webContents.send('read-file-reply', path, data)
+
+})
+//设置行号
+ipcMain.on('set-cursor', function (event, lineNumber) {
+  win.webContents.send('set-lineNumber', lineNumber)
+})
+
 
 
 import { ChannelMessage } from "@/main/domain/message";
+
 //窗口最大化
 ipcMain.on(ChannelMessage.WINDOW_OPERATION, function (e, operation) {
 
@@ -296,24 +234,3 @@ ipcMain.on(ChannelMessage.WINDOW_OPERATION, function (e, operation) {
 
 })
 
-//测试
-ipcMain.on('init-dir', function (event, path) {
-  let files = listFiles(path);
-
-  win.webContents.send('open-dir', files)
-})
-
-
-//    ipcRenderer.send("open-child-dir", curItem.path);
-ipcMain.on('open-child-dir', function (event, path, id) {
-  let files = listFiles(path);
-
-  win.webContents.send('open-child-dir', id, files)
-})
-
-ipcMain.on('read-file', function (event, path) {
-
-  const fs = require("fs");
-
-  win.webContents.send('read-file', fs.readFileSync(path, "utf8"))
-})
