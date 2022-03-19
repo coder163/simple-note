@@ -14,7 +14,6 @@
           @click="telescopic('bars')"
         >
           <font-awesome-icon icon="bars" size="lg" />
-          <!-- <font-awesome-icon icon="cloud-arrow-down" size="lg" /> -->
         </a>
       </li>
       <!-- <li>
@@ -23,13 +22,13 @@
         </a>
       </li> -->
     </ul>
-    <!-- <ul class="bottom">
+    <ul class="bottom">
       <li>
         <a href="#" :class="{ actvie: actvieLabel == 'cog' }" @click="telescopic('cog')">
           <font-awesome-icon icon="cog" size="lg" />
         </a>
       </li>
-    </ul> -->
+    </ul>
   </div>
 </template>
 

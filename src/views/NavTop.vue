@@ -38,9 +38,9 @@ function windowOperation(operation: string): void {
   console.log(maximizeIcon.value[1]);
   if (operation === "maximize") {
     if (maximizeIcon.value[1] === "square") {
-      maximizeIcon.value = ["far", "window-restore"];
+      maximizeIcon.value = ["fas", "window-restore"];
     } else {
-      maximizeIcon.value = ["far", "square"];
+      maximizeIcon.value = ["fas", "square"];
     }
   }
   ipcRenderer.send(ChannelMessage.WINDOW_OPERATION, operation);

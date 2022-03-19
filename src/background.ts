@@ -119,7 +119,7 @@ async function createWindow() {
   win = new BrowserWindow({
     width: 1200,
     height: 735,
-    frame: false,//添加这一行采用无边框窗口
+    frame: true,//添加这一行采用无边框窗口
     webPreferences: {
       javascript: true,
       plugins: true,
@@ -133,7 +133,7 @@ async function createWindow() {
   })
 
 
-  Menu.setApplicationMenu(null);
+  // Menu.setApplicationMenu(null);
 
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
