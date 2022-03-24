@@ -1,11 +1,12 @@
 <template>
   <!-- <nav-top></nav-top> -->
-  <split-panel :style="{ height: winHeight + 'px' }"  v-bind:default-width="240">
+  <split-panel :style="{ height: winHeight + 'px' }" v-bind:default-width="defaultWidth">
     <template v-slot:before>
       <div class="app-side">
         <side @actvie="actvieIcon"></side>
-
+        <!-- <div :class="{ hide: isHide }"> -->
         <router-view></router-view>
+        <!-- </div> -->
       </div>
     </template>
     <template v-slot:after>
@@ -24,7 +25,9 @@ import Side from "./views/Side.vue";
 import { onMounted, ref } from "vue";
 
 let winHeight = ref<number>(document.documentElement.clientHeight);
+let isHide = ref<boolean>(false);
 
+let defaultWidth = ref<number>(240);
 onMounted(() => {
   window.addEventListener(
     "resize",
@@ -36,10 +39,7 @@ onMounted(() => {
 });
 
 function actvieIcon(label: string, curLabel: string) {
-  if (label === curLabel) {
-    console.log("当前点击的是已经的激活的，需要隐藏树形菜单");
-   
-  }
+  defaultWidth.value = defaultWidth.value === 240 && label === curLabel ? 0 : 240;
 }
 </script>
 
@@ -48,5 +48,9 @@ function actvieIcon(label: string, curLabel: string) {
   display: flex;
   height: 100%;
   background-color: #ebedef;
+}
+
+.hide {
+  display: none;
 }
 </style>

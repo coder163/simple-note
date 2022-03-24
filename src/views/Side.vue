@@ -49,7 +49,6 @@ onMounted(() => {
 
 function telescopic(label: string = "book") {
   if (label == "book") {
-    console.log("telescopic book");
     router.push({
       path: "/",
     });
@@ -67,7 +66,7 @@ function telescopic(label: string = "book") {
 <style lang="scss">
 #icon-tool {
   background: #72787e;
-  width: 40px;
+  min-width: 40px;
   height: 100%;
   display: flex;
   flex-direction: column;

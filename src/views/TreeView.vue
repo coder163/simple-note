@@ -13,9 +13,9 @@ const store = useStore();
 const { ipcRenderer } = window.require("electron");
 let list = ref();
 ipcRenderer.on("list-dir-reply", (event: Electron.IpcRendererEvent, path: any) => {
-  list.value = FileUtil.listFiles(path)
+  list.value = FileUtil.listFiles(path);
   store.commit("updateTreeList", list.value);
-})
+});
 onMounted(() => {
   let treeList = store.getters.getTreeList;
   //初始路径

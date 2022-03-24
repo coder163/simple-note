@@ -4,8 +4,7 @@ import { app, protocol, BrowserWindow, Menu, MenuItemConstructorOptions, MenuIte
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
-//文件读取的工具类
-import FileUtil from '@/main/utils/fileUtil'
+
 
 let mainMenuTemplate: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
 
@@ -21,7 +20,7 @@ let mainMenuTemplate: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
 
         dialog.showOpenDialog(win, properties).then(result => {
           if (result.filePaths.length > 0 && !result.canceled) {
-            //console.log(result.filePaths[0])
+
             let path = result.filePaths[0]
 
             const fs = require("fs");
@@ -51,27 +50,40 @@ let mainMenuTemplate: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
 
     }
     ]
-  }
+  },
+  {
+    label: '视图',
+    submenu: [{
+      label: '显示/隐藏菜单栏',
+      accelerator: 'Ctrl+Shift+V',
+      click: function (item: MenuItem, focusedWindow: BrowserWindow | undefined) {
 
-]
-/**
- ,
+        win.setMenuBarVisibility(!win.isMenuBarVisible());
+
+      }
+    }
+    ]
+  },
+
   {
     label: '帮助',
     submenu: [{
-      label: '提交Bug',
+      label: '文档说明',
 
     }, {
       type: 'separator'
     }, {
-      label: '官方文档',
+      label: '检查更新',
 
     }, {
-      label: '关于版本',
-
+      label: '关于',
     }
     ]
   }
+
+]
+/**
+ 
  *  */
 
 // 菜单模板

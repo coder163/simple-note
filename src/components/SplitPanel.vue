@@ -1,53 +1,45 @@
 <template>
-	<div id="split-panel" ref="SplitPanel">
-		<div class="split-item" :style="{ 'width': Width }">
-			<slot name="before"></slot>
-		</div>
-		<div
-			class="split-trigger"
-			:style="{ 'width': triggerWidth + 'px', 'height': '100%' }"
-			@mousedown="handleMouseDown"
-		></div>
-		<div class="split-item split-item2">
-			<slot name="after"></slot>
-		</div>
-	</div>
+  <div id="split-panel" ref="SplitPanel">
+    <div class="split-item" :style="{ width: Width }">
+      <slot name="before"></slot>
+    </div>
+    <div
+      class="split-trigger"
+      :style="{ width: triggerWidth + 'px', height: '100%' }"
+      @mousedown="handleMouseDown"
+    ></div>
+    <div class="split-item split-item2">
+      <slot name="after"></slot>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
-
-
-import { ref, computed, watch, onMounted, } from 'vue';
+import { ref, computed, watch, onMounted } from "vue";
 
 /**
  * 分割条的数据类型,该声明不能单独的抽离(官方未解决)
  * https://github.com/vuejs/core/issues/4294
  */
 interface ISplitPanelProps {
-
-	defaultWidth?: number;
-	min?: number;
-	max?: number;
+  defaultWidth?: number;
+  min?: number;
+  max?: number;
 }
 
-
-
-const props = withDefaults(
-	defineProps<ISplitPanelProps>(),
-	{
-		defaultWidth: 100, min: 10, max: 90, height: 300
-	});
+const props = withDefaults(defineProps<ISplitPanelProps>(), {
+  defaultWidth: 100,
+  min: 10,
+  max: 90,
+  height: 300,
+});
 let SplitPanel = ref<HTMLElement | null>();
 
 watch(props, (newVal, oldVal) => {
-
-	console.log('0000')
-	PanelWidth.value = props.defaultWidth
+  PanelWidth.value = props.defaultWidth;
 });
 
-
-
-let PanelWidth = ref<number>()
+let PanelWidth = ref<number>();
 // 滑动器宽度 （px）
 let triggerWidth: number = 5;
 
@@ -56,72 +48,66 @@ let triggerWidth: number = 5;
 
  */
 let Width = computed(() => {
-	return `${PanelWidth.value}px`;
+  return `${PanelWidth.value}px`;
 });
 
-
-
 onMounted(() => {
-	PanelWidth.value = props.defaultWidth;
-	console.log(props.defaultWidth)
-})
+  PanelWidth.value = props.defaultWidth;
+});
 
 /**
- * 
+ *
  * 注册鼠标事件
  */
 function handleMouseDown(e: MouseEvent) {
-	document.addEventListener("mousemove", handleMouseMove);
-	document.addEventListener("mouseup", handleMouseUp);
+  document.addEventListener("mousemove", handleMouseMove);
+  document.addEventListener("mouseup", handleMouseUp);
 }
 
 function handleMouseMove(e: MouseEvent) {
-	// //禁用动画
-	// istransition.value = false;
-	let clientRect: DOMRect | undefined = SplitPanel.value?.getBoundingClientRect();
-	// console.log(clientRect)
-	if (clientRect) {
-		let offset = e.pageX - clientRect.left + triggerWidth / 2;
-		PanelWidth.value = offset;
-	}
+  let clientRect: DOMRect | undefined = SplitPanel.value?.getBoundingClientRect();
 
+  if (clientRect) {
+    let offset = e.pageX - clientRect.left + triggerWidth / 2;
+    PanelWidth.value = offset;
+  }
 }
 
 function handleMouseUp() {
-	document.removeEventListener("mousemove", handleMouseMove);
+  document.removeEventListener("mousemove", handleMouseMove);
 }
 </script>
 
 <style lang="scss">
 #split-panel {
-	width: 100%;
-	height: 100%;
-	display: flex;
-	//行
-	flex-direction: row;
-	//不换行
-	flex-wrap: nowrap;
-	background: #ccc;
-	//没啥用
+  width: 100%;
+  height: 100%;
+  display: flex;
+  //行
+  flex-direction: row;
+  //不换行
+  flex-wrap: nowrap;
+  background: #ccc;
+  //没啥用
 
-	.split-item {
-		// background: #f00;
-		min-width: 40px;
-	}
-	.split-item2 {
-		// background: #0f0;
-		flex: 1;
-	}
+  .split-item {
+    // background: #f00;
+    min-width: 40px;
+  }
+  .split-item2 {
+    // background: #0f0;
+    flex: 1;
+  }
 }
 
 .split-trigger {
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	cursor: col-resize;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  cursor: col-resize;
 }
 .transition {
-	transition: width 500ms;
+  transition: width 500ms;
 }
 </style>
