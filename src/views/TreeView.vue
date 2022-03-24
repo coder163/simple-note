@@ -12,18 +12,22 @@ import { useStore } from "vuex";
 const store = useStore();
 const { ipcRenderer } = window.require("electron");
 let list = ref();
-
+ipcRenderer.on("list-dir-reply", (event: Electron.IpcRendererEvent, path: any) => {
+  list.value = FileUtil.listFiles(path)
+  store.commit("updateTreeList", list.value);
+})
 onMounted(() => {
   let treeList = store.getters.getTreeList;
+  //初始路径
   if (treeList == null || treeList.length == 0) {
-    list.value = FileUtil.listFiles("D:\\笔记整理");
-    store.commit("updateTreeList", list.value);
-  } else {
-    list.value = treeList;
+    // list.value = FileUtil.listFiles("D:\\笔记整理");
+    // store.commit("updateTreeList", list.value);
   }
+  list.value = treeList;
 });
 
 function selectedNode(curItem: any) {
+  // console.log(curItem)
   reset(list.value);
 
   curItem.selected = true;

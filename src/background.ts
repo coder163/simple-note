@@ -7,7 +7,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 //文件读取的工具类
 import FileUtil from '@/main/utils/fileUtil'
 
-let template: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
+let mainMenuTemplate: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
 
   {
 
@@ -26,7 +26,7 @@ let template: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
 
             const fs = require("fs");
 
-            win.webContents.send('read-file', fs.readFileSync(path, "utf8"))
+            win.webContents.send('read-file-reply', path, fs.readFileSync(path, "utf8"))
 
           }
         })
@@ -40,12 +40,9 @@ let template: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
         let properties: OpenDialogOptions = { properties: ['openDirectory'] }
         dialog.showOpenDialog(win, properties).then(result => {
           if (result.filePaths.length > 0 && !result.canceled) {
-            //console.log(result.filePaths[0])
-            let path = result.filePaths[0]
+            console.log(result.filePaths[0])
+            win.webContents.send('list-dir-reply', result.filePaths[0])
 
-            let files = FileUtil.listFiles(path);
-
-            win.webContents.send('open-dir', files)
 
           }
         })
@@ -55,7 +52,10 @@ let template: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
     }
     ]
   }
-  ,
+
+]
+/**
+ ,
   {
     label: '帮助',
     submenu: [{
@@ -72,8 +72,7 @@ let template: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
     }
     ]
   }
-]
-
+ *  */
 
 // 菜单模板
 const menuTemplate: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
@@ -94,13 +93,13 @@ const menuTemplate: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
     role: 'paste'
   }
 ];
-const appMenu = Menu.buildFromTemplate(template);
+
 // 构建菜单项
 const menu = Menu.buildFromTemplate(menuTemplate);
 //监听菜单请求
 ipcMain.on('menu', (ev, arg) => {
   // 弹出上下文菜单
-  appMenu.popup({
+  menu.popup({
     x: arg.x,
     y: arg.y
   });
@@ -133,7 +132,7 @@ async function createWindow() {
   })
 
 
-  // Menu.setApplicationMenu(null);
+  Menu.setApplicationMenu(Menu.buildFromTemplate(mainMenuTemplate));
 
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -184,16 +183,16 @@ if (isDevelopment) {
 
 
 
-ipcMain.on('list-dir', function (event, path) {
-  win.webContents.send('list-dir-reply', FileUtil.listFiles(path))
-})
+// ipcMain.on('list-dir', function (event, path) {
+//   win.webContents.send('list-dir-reply', FileUtil.listFiles(path))
+// })
 
-ipcMain.on('list-child-dir', function (event, path) {
+// ipcMain.on('list-child-dir', function (event, path) {
 
-  let list = FileUtil.listFiles(path);
-  console.log(path)
-  win.webContents.send('list-child-dir-reply', list)
-})
+//   let list = FileUtil.listFiles(path);
+//   console.log(path)
+//   win.webContents.send('list-child-dir-reply', list)
+// })
 
 ipcMain.on('read-file', function (event, path) {
 

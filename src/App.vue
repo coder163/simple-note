@@ -1,6 +1,6 @@
 <template>
   <!-- <nav-top></nav-top> -->
-  <split-panel :style="{ height: winHeight + 'px' }" :default-width="240">
+  <split-panel :style="{ height: winHeight + 'px' }"  v-bind:default-width="240">
     <template v-slot:before>
       <div class="app-side">
         <side @actvie="actvieIcon"></side>
@@ -38,6 +38,7 @@ onMounted(() => {
 function actvieIcon(label: string, curLabel: string) {
   if (label === curLabel) {
     console.log("当前点击的是已经的激活的，需要隐藏树形菜单");
+   
   }
 }
 </script>

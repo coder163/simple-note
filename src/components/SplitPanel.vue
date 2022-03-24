@@ -1,9 +1,13 @@
 <template>
-	<div id="split-panel" ref="SplitPanel" >
+	<div id="split-panel" ref="SplitPanel">
 		<div class="split-item" :style="{ 'width': Width }">
 			<slot name="before"></slot>
 		</div>
-		<div class="split-trigger" :style="{'width':triggerWidth+'px','height':'100%'}" @mousedown="handleMouseDown"></div>
+		<div
+			class="split-trigger"
+			:style="{ 'width': triggerWidth + 'px', 'height': '100%' }"
+			@mousedown="handleMouseDown"
+		></div>
 		<div class="split-item split-item2">
 			<slot name="after"></slot>
 		</div>
@@ -12,13 +16,14 @@
 
 <script lang="ts" setup>
 
-import { ref, computed, onMounted } from 'vue';
+
+import { ref, computed, watch, onMounted, } from 'vue';
 
 /**
  * 分割条的数据类型,该声明不能单独的抽离(官方未解决)
  * https://github.com/vuejs/core/issues/4294
  */
-interface ISplitPanelProps{
+interface ISplitPanelProps {
 
 	defaultWidth?: number;
 	min?: number;
@@ -28,12 +33,18 @@ interface ISplitPanelProps{
 
 
 const props = withDefaults(
-defineProps<ISplitPanelProps>(),
-{
- 	defaultWidth: 100, min: 10, max: 90,height:300
- });
- 
+	defineProps<ISplitPanelProps>(),
+	{
+		defaultWidth: 100, min: 10, max: 90, height: 300
+	});
 let SplitPanel = ref<HTMLElement | null>();
+
+watch(props, (newVal, oldVal) => {
+
+	console.log('0000')
+	PanelWidth.value = props.defaultWidth
+});
+
 
 
 let PanelWidth = ref<number>()
@@ -49,8 +60,10 @@ let Width = computed(() => {
 });
 
 
+
 onMounted(() => {
 	PanelWidth.value = props.defaultWidth;
+	console.log(props.defaultWidth)
 })
 
 /**
@@ -90,11 +103,10 @@ function handleMouseUp() {
 	flex-wrap: nowrap;
 	background: #ccc;
 	//没啥用
-	
+
 	.split-item {
 		// background: #f00;
 		min-width: 40px;
-
 	}
 	.split-item2 {
 		// background: #0f0;
