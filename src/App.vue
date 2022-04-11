@@ -4,13 +4,13 @@
     <template v-slot:before>
       <div class="app-side">
         <side @actvie="actvieIcon"></side>
-        <!-- <div :class="{ hide: isHide }"> -->
+
         <router-view></router-view>
-        <!-- </div> -->
       </div>
     </template>
     <template v-slot:after>
       <codemiirror-editor></codemiirror-editor>
+      <!-- <tui-editor></tui-editor> -->
     </template>
   </split-panel>
 </template>
@@ -18,8 +18,8 @@
 <script setup lang="ts">
 import SplitPanel from "./components/SplitPanel.vue";
 import CodemiirrorEditor from "./components/CodemirrorEditor.vue";
+import TuiEditor from "./components/TuiEditor.vue";
 
-// import NavTop from "./views/NavTop.vue";
 import Side from "./views/Side.vue";
 
 import { onMounted, ref } from "vue";
@@ -29,6 +29,13 @@ let isHide = ref<boolean>(false);
 
 let defaultWidth = ref<number>(240);
 onMounted(() => {
+  document.onkeydown = function (event) {
+    if (event.ctrlKey && event.keyCode == 65) {
+      //禁用ctrl + a 功能
+
+      return false;
+    }
+  };
   window.addEventListener(
     "resize",
     function () {

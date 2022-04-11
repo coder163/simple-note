@@ -87,7 +87,7 @@ function handleMouseUp() {
   flex-direction: row;
   //不换行
   flex-wrap: nowrap;
-  background: #ccc;
+  // background: #ccc;
   //没啥用
 
   .split-item {

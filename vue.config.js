@@ -1,5 +1,10 @@
 // vue.config.js
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
+
+
+
 module.exports = {
+
     chainWebpack: config => {
         config
             .plugin('html')
@@ -7,6 +12,7 @@ module.exports = {
                 args[0].title = '简单笔记'
                 return args
             })
+      
     },
 
     pluginOptions: {

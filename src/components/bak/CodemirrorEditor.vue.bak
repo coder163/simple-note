@@ -5,7 +5,8 @@
 import { onMounted, watch, ref } from "vue";
 import { useStore } from "vuex";
 import "codemirror/lib/codemirror.css";
-import "codemirror/theme/juejin.css";
+import "codemirror/theme/eclipse.css";
+import "codemirror/theme/darcula.css";
 
 //@ts-ignore
 import CodeMirror from "codemirror";
@@ -68,7 +69,7 @@ let option = {
   lineNumbers: true,
   tabSize: 4,
   mode: "gfm",
-  // theme: "gruvbox-dark",
+  theme: "eclipse",
   matchBrackets: true, //括号匹配
   autoCloseBrackets: true, // 在键入时自动关闭括号和引号
   styleActiveLine: true, // 选中行高亮
@@ -94,16 +95,24 @@ ipcRenderer.on("read-file-reply", (event: any, path: string, data: any) => {
   document.title = path;
   fileFullPath.value = path;
   cm?.eachLine((lines: any) => {
-    let imgRegex = /^!\[(.*)\]\((.*)\)/;
-    const result = lines.text.match(imgRegex);
+
+    let imgRegex = /^!\[(.*)\]\((.*)\)/
+    const result = lines.text.match(imgRegex)
     if (result) {
-      const posLine = cm.lineInfo(lines).line; // 链接的行号
-      const posStart = lines.text.indexOf(result); // 链接的起始字符位置
-      const posEnd = posStart + result.length; // 结束字符位置
-      //   let img = `![](D:\\笔记整理\\Java研修录\\Linux基础\\${result[2]})`
-      // cm.replaceRange(`<div class="img-show">这上测试</div>`, { line: posLine + 1, ch: posStart })
+
+      const posLine = cm.lineInfo(lines).line   // 链接的行号
+      const posStart = lines.text.indexOf(result)   // 链接的起始字符位置
+      const posEnd = posStart + result.length      // 结束字符位置
+
+      // let img= `<img src='D:\\笔记整理\\Java研修录\\Linux基础\\${result[2]}' style="zoom:60%;"/>`
+      // cm.replaceRange(img,{line:posLine+1,ch:posStart})
+ 
     }
-  });
+
+  })
+
+ 
+
 });
 
 ipcRenderer.on("set-lineNumber", (event, lineNumber) => {
@@ -119,30 +128,31 @@ onMounted(() => {
   cm = CodeMirror.fromTextArea(document.getElementById("editor"), option);
   cm.on("change", function () {
     document.title = fileFullPath.value + "*";
+
   });
+ cm.on('renderLine', (cm_: any, line: any, element: any) => {
+    console.log("渲染，line",line)
+    let imgRegex = /^!\[(.*)\]\((.*)\)/
+    let imgTagRegex = /<img src="([^"]*?)"/;
 
-  /*
-  cm.on('renderLine', (cm_: any, line: any, element: any) => {
+    const result = line.text.match(imgRegex)
+    const resultTag = line.text.match(imgTagRegex)
 
-    const result = line.text.match(/^!\[(.*)\]\((.*)\)/)
-    const resultTag = line.text.match( /<img src="([^"]*?)"/)
+    if (resultTag) {
 
-    if (result || resultTag) {
-        let para=document.createElement("div");
-        para.setAttribute("style","z-index:100");
-        para.setAttribute("class","CodeMirror-line ")
-        // style="zoom:60%;"
-        para.innerHTML = `<img  src='D:\\笔记整理\\Java研修录\\Linux基础\\${result?result[2]:resultTag[1]}'   />`
-        element.appendChild(para)
+      element.innerHTML = `<img src='D:\\笔记整理\\Java研修录\\Linux基础\\${resultTag[1]}' 
+          style="zoom:60%;"/>`
+    }
+    if (result) {
+
+      element.innerHTML = `<img  src='D:\\笔记整理\\Java研修录\\Linux基础\\${result[2]}' 
+          style="zoom:60%;"/>`
     }
 
 
-  })*/
-  /*
-  
-  "mousedown", "dblclick", "touchstart", "contextmenu", "keydown", "keypress", "keyup", "cut", "copy", "paste", "dragstart", "dragenter", "dragover", "dragleave", "drop" 当CodeMirror处理此类DOM事件时触发。
-   */
-  cm.on("mousedown", (cm_: any, event: any) => {
+  })
+  cm.on('mousedown', (cm_: any, event: any) => {
+
     // 1 = 鼠标左键，2 = 鼠标右键，4 = 鼠标中键
 
     if (event.buttons === 2) {
@@ -160,27 +170,7 @@ onMounted(() => {
     //     // 打开链接 ...
     //   }
     // }
-    /*
-        if (event.buttons === 1 && event.target.nodeName === "IMG") {
-    
-          let pos = cm.getCursor();
-    
-          let lineContent = cm.getLine(pos.line);
-    
-          if (lineContent && (lineContent.match(/<img src="([^"]*?)"/) === null)) {
-            let img = `<img src='D:\\笔记整理\\Java研修录\\Linux基础\\'style="zoom:60%;"/>`
-            cm_.replaceRange(img, { line: 5, ch: 0 })
-            setTimeout(() => {
-              cm_.focus();
-              cm_.setCursor({
-                line: 5,
-                ch: 0,
-              });
-            }, 20);
-          }
-    
-        }*/
-  });
+  })
   cm.addKeyMap({
     "Ctrl-S": function () {
       document.title = fileFullPath.value as string;
@@ -201,19 +191,12 @@ onMounted(() => {
   });
 
   cm.on("inputRead", () => {
-    // console.log("inputRead");
+    console.log("inputRead");
     cm.showHint();
   });
-  store.commit("updateEditor", cm);
+
 });
-function insertAfter(newElement: any, targetElement: any) {
-  var parent = targetElement.parentNode;
-  if (parent.lastChild == targetElement) {
-    parent.appendChild(newElement);
-  } else {
-    parent.insertBefore(newElement, targetElement.nextSibling);
-  }
-}
+
 function handleShowHint(cmInstance: any, hintOptions: any) {
   let cursor = cmInstance.getCursor();
   let cursorLine = cmInstance.getLine(cursor.line);
@@ -263,8 +246,9 @@ function hintRender(element: any, self: any, data: any) {
 
 <style lang="scss">
 .CodeMirror {
-  font-family: "Fira Code", Consolas, Menlo, Monaco, "Lucida Console", "Liberation Mono",
-    "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace, serif !important;
+  font-family: "Fira Code", Consolas, Menlo, Monaco, "Lucida Console",
+    "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono",
+    "Courier New", monospace, serif !important;
   height: 100% !important;
 }
 

@@ -39,7 +39,7 @@ let mainMenuTemplate: Array<(MenuItemConstructorOptions) | (MenuItem)> = [
         let properties: OpenDialogOptions = { properties: ['openDirectory'] }
         dialog.showOpenDialog(win, properties).then(result => {
           if (result.filePaths.length > 0 && !result.canceled) {
-            console.log(result.filePaths[0])
+            // console.log(result.filePaths[0])
             win.webContents.send('list-dir-reply', result.filePaths[0])
 
 
@@ -131,6 +131,7 @@ async function createWindow() {
     width: 1200,
     height: 735,
     frame: true,//添加这一行采用无边框窗口
+    title: '简单笔记',
     webPreferences: {
       javascript: true,
       plugins: true,

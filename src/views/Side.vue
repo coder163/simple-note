@@ -65,7 +65,8 @@ function telescopic(label: string = "book") {
 
 <style lang="scss">
 #icon-tool {
-  background: #72787e;
+  // background: #ebedef;
+  border-right: 1px solid #c7cbd1;
   min-width: 40px;
   height: 100%;
   display: flex;
@@ -87,23 +88,23 @@ function telescopic(label: string = "book") {
   a {
     display: inline-block;
     width: 100%;
-    line-height: 45px;
+    line-height: 40px;
   }
 
   a:link,
   a:visited {
-    color: #e5e5e5;
+    color: #101010;
   }
 
   a:hover {
     color: #007acc;
-    background-color: #d9d9d9;
+    // background-color: #d9d9d9;
     cursor: pointer;
   }
 }
 
 .actvie {
-  background-color: #d9d9d9;
+  // background-color: #d9d9d9;
   color: #007acc !important;
 }
 </style>

@@ -10,8 +10,9 @@ const store = useStore();
 onMounted(() => {
   const codemirror = store.getters["getEditor"];
 
-  // codemirror.on("changes", update);
+  codemirror.on("changes", update);
   update(codemirror);
+
   let toc = document.getElementById("outline");
   //跳转到指定的行
   toc?.addEventListener("click", (event) => {
@@ -27,29 +28,24 @@ onMounted(() => {
 });
 function update(cm: any) {
   var $toc = document.getElementById("outline") as HTMLElement;
+  console.log($toc, "update");
+  if (!$toc) return;
+
   var lastTOC = "";
 
   var newTOC = "";
 
   cm.eachLine(function (line: any) {
-    // console.log(line);
-    var tmp = /^(#+)\s+(.+)(?:\s+\1)?$/.exec(line.text);
+    let tmp = line.text.match(/(#+)[^\n]*?/);
+
     if (!tmp) return;
-    var lineNo = line.lineNo();
+    //提取行号
+    let lineNo = line.lineNo();
 
-    if (!cm.getStateAfter(lineNo).header) return; // double check but is not header
     var level = tmp[1].length;
+    //去除空格和#号
+    let title = line.text.replace(/\s+/g, "").replace(/^#+/, "");
 
-    var title = tmp[2];
-
-    title = title.replace(/([*_]{1,2}|~~|`+)(.+?)\1/g, "$2"); // em / bold / del / code
-    title = title.replace(
-      /\\(?=.)|\[\^.+?\]|\!\[((?:[^\\\]]+|\\.)+)\](\(.+?\)| ?\[.+?\])?/g,
-      ""
-    ); // images / escaping slashes / footref
-    title = title.replace(/\[((?:[^\\\]]+|\\.)+)\](\(.+?\)| ?\[.+?\])/g, "$1"); // links
-    title = title.replace(/&/g, "&amp;");
-    title = title.replace(/</g, "&lt;");
     newTOC +=
       '<div data-line="' +
       lineNo +
