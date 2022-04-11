@@ -36,8 +36,9 @@ function update(cm: any) {
   var newTOC = "";
 
   cm.eachLine(function (line: any) {
-    let tmp = line.text.match(/(#+)[^\n]*?/);
+    //let tmp = line.text.match(/(#+)[^\n]*?/);
 
+    let tmp = line.text.match(/^(#+)\s+(.+)(?:\s+\1)?$/);
     if (!tmp) return;
     //提取行号
     let lineNo = line.lineNo();

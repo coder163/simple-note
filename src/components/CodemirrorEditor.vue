@@ -206,59 +206,6 @@ onMounted(() => {
   });
   store.commit("updateEditor", cm);
 });
-function insertAfter(newElement: any, targetElement: any) {
-  var parent = targetElement.parentNode;
-  if (parent.lastChild == targetElement) {
-    parent.appendChild(newElement);
-  } else {
-    parent.insertBefore(newElement, targetElement.nextSibling);
-  }
-}
-function handleShowHint(cmInstance: any, hintOptions: any) {
-  let cursor = cmInstance.getCursor();
-  let cursorLine = cmInstance.getLine(cursor.line);
-  let end = cursor.ch;
-  let start = end;
-
-  let token = cmInstance.getTokenAt(cursor);
-  // console.log(cmInstance, cursor, cursorLine, end, token);
-  //    to: { ch: token.end, line: cursor.line },
-  return {
-    list: [
-      {
-        text: "hello",
-        displayText: "你好呀",
-        displayInfo: "提示信息1",
-        render: hintRender,
-      },
-      {
-        text: "world",
-        displayText: "世界",
-        displayInfo: "提示信息2",
-        render: hintRender,
-      },
-    ],
-    from: { ch: token.start, line: cursor.line },
-    to: { ch: token.end, line: cursor.line },
-  };
-}
-function hintRender(element: any, self: any, data: any) {
-  console.log(element);
-  let div = document.createElement("div");
-  div.setAttribute("class", "autocomplete-div");
-
-  let divText = document.createElement("div");
-  divText.setAttribute("class", "autocomplete-name");
-  divText.innerText = data.displayText;
-
-  let divInfo = document.createElement("div");
-  divInfo.setAttribute("class", "autocomplete-hint");
-  divInfo.innerText = data.displayInfo;
-
-  div.appendChild(divText);
-  div.appendChild(divInfo);
-  element.appendChild(div);
-}
 </script>
 
 <style lang="scss">
