@@ -25,10 +25,29 @@ onMounted(() => {
     // codemirror.setCursor(lineNumber, 0);
     ipcRenderer.send("set-cursor", lineNumber);
   });
+  //添加激活样式
+  let items = document.querySelectorAll(".toc-item");
+
+  items.forEach(item => {
+    item?.addEventListener("click", (event) => {
+      let itemActives = document.querySelectorAll(".item-active");
+
+      itemActives.forEach(active => {
+        active.classList.remove('item-active')
+      })
+
+      if (!item.classList.contains('item-active')) {
+
+        item.classList.add('item-active')
+      }
+
+    })
+
+  })
 });
 function update(cm: any) {
   var $toc = document.getElementById("outline") as HTMLElement;
-  console.log($toc, "update");
+  // console.log($toc, "update");
   if (!$toc) return;
 
   var lastTOC = "";
@@ -50,7 +69,7 @@ function update(cm: any) {
     newTOC +=
       '<div data-line="' +
       lineNo +
-      '" class="toc-item" style="padding-left:' +
+      '" class="toc-item "  style="padding-left:' +
       level +
       'em">' +
       title +
@@ -59,6 +78,11 @@ function update(cm: any) {
   if (newTOC == lastTOC) return;
 
   $toc.innerHTML = lastTOC = newTOC;
+}
+
+function selectItem(item: HTMLElement) {
+
+  console.log(item)
 }
 </script>
 <style lang="scss">

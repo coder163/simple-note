@@ -5,7 +5,7 @@
 import { onMounted, watch, ref } from "vue";
 import { useStore } from "vuex";
 import "codemirror/lib/codemirror.css";
-import "codemirror/theme/juejin.css";
+import "codemirror/theme/dracula.css";
 
 //@ts-ignore
 import CodeMirror from "codemirror";
@@ -23,8 +23,8 @@ require("codemirror/addon/selection/active-line.js");
 require("codemirror/addon/scroll/simplescrollbars.js");
 require("codemirror/addon/scroll/simplescrollbars.css");
 
-const CompleteEmoji = require("hypermd/goods/complete-emoji");
-require("codemirror/mode/haskell/haskell");
+// const CompleteEmoji = require("hypermd/goods/complete-emoji");
+// require("codemirror/mode/haskell/haskell");
 
 // 折叠
 require("codemirror/addon/fold/foldgutter.css");
@@ -33,17 +33,17 @@ require("codemirror/addon/fold/foldgutter");
 require("codemirror/addon/fold/brace-fold");
 require("codemirror/addon/fold/comment-fold");
 //搜索功能
-require("codemirror/addon/scroll/annotatescrollbar.js");
-require("codemirror/addon/search/matchesonscrollbar.js");
-require("codemirror/addon/search/match-highlighter.js");
-require("codemirror/addon/search/jump-to-line.js");
+// require("codemirror/addon/scroll/annotatescrollbar.js");
+// require("codemirror/addon/search/matchesonscrollbar.js");
+// require("codemirror/addon/search/match-highlighter.js");
+// require("codemirror/addon/search/jump-to-line.js");
 
-require("codemirror/addon/dialog/dialog.js");
-require("codemirror/addon/dialog/dialog.css");
-require("codemirror/addon/search/searchcursor.js");
-require("codemirror/addon/search/search.js");
+// require("codemirror/addon/dialog/dialog.js");
+// require("codemirror/addon/dialog/dialog.css");
+// require("codemirror/addon/search/searchcursor.js");
+// require("codemirror/addon/search/search.js");
 //代码提示
-require("codemirror/addon/hint/show-hint");
+// require("codemirror/addon/hint/show-hint");
 // 自动括号匹配功能
 require("codemirror/addon/edit/matchbrackets");
 
@@ -51,8 +51,8 @@ require("codemirror/addon/edit/matchbrackets");
 require("codemirror/addon/display/autorefresh");
 
 // 多语言支持？
-require("codemirror/addon/mode/overlay");
-require("codemirror/addon/mode/multiplex");
+// require("codemirror/addon/mode/overlay");
+// require("codemirror/addon/mode/multiplex");
 
 const { ipcRenderer } = window.require("electron");
 
@@ -67,43 +67,38 @@ let option = {
   viewportMargin: Infinity,
   lineNumbers: true,
   tabSize: 4,
+  smartInden: true, //自动缩进是否开启
+  autofocus: true, //自动获得焦点
   mode: "gfm",
-  // theme: "gruvbox-dark",
+  // theme: "dracula",
   matchBrackets: true, //括号匹配
   autoCloseBrackets: true, // 在键入时自动关闭括号和引号
   styleActiveLine: true, // 选中行高亮
   highlightFormatting: true, //md配置
   allowAtxHeaderWithoutSpace: true,
-  // 代码提示功能
+  /*/ 代码提示功能
   hintOptions: {
     // 避免由于提示列表只有一个提示信息时，自动填充
     completeSingle: false,
     // 不同的语言支持从配置中读取自定义配置 sql语言允许配置表和字段信息，用于代码提示 CompleteEmoji.createHintFunc()
     // hint: handleShowHint,
-  },
+  },*/
 
-  hmdReadLink: {
-    baseURI: "D:\\笔记整理\\Java研修录\\基础编程",
-  },
+
 
   //滚动条""
   // scrollbarStyle:'native'
 };
+/*
+
+  hmdReadLink: {
+    baseURI: "D:\\笔记整理\\Java研修录\\基础编程",
+  },
+ */
 ipcRenderer.on("read-file-reply", (event: any, path: string, data: any) => {
   cm.setValue(data);
-  document.title = path;
-  fileFullPath.value = path;
-  cm?.eachLine((lines: any) => {
-    let imgRegex = /^!\[(.*)\]\((.*)\)/;
-    const result = lines.text.match(imgRegex);
-    if (result) {
-      const posLine = cm.lineInfo(lines).line; // 链接的行号
-      const posStart = lines.text.indexOf(result); // 链接的起始字符位置
-      const posEnd = posStart + result.length; // 结束字符位置
-      //   let img = `![](D:\\笔记整理\\Java研修录\\Linux基础\\${result[2]})`
-      // cm.replaceRange(`<div class="img-show">这上测试</div>`, { line: posLine + 1, ch: posStart })
-    }
-  });
+  document.title = "简单笔记-"+path;
+  fileFullPath.value =  document.title;
 });
 
 ipcRenderer.on("set-lineNumber", (event, lineNumber) => {
@@ -117,27 +112,27 @@ ipcRenderer.on("set-lineNumber", (event, lineNumber) => {
 });
 onMounted(() => {
   cm = CodeMirror.fromTextArea(document.getElementById("editor"), option);
+  // cm.replaceRange("<div> </div>", { line: 0, ch: 0 }, { line: 2, ch: 10 });
+
   cm.on("change", function () {
-    document.title = fileFullPath.value + "*";
+   
   });
-
   /*
-  cm.on('renderLine', (cm_: any, line: any, element: any) => {
-
-    const result = line.text.match(/^!\[(.*)\]\((.*)\)/)
-    const resultTag = line.text.match( /<img src="([^"]*?)"/)
+  cm.on("renderLine", (cm_: any, line: any, element: any) => {
+    const result = line.text.match(/^!\[(.*)\]\((.*)\)/);
+    const resultTag = line.text.match(/<img src="([^"]*?)"/);
 
     if (result || resultTag) {
-        let para=document.createElement("div");
-        para.setAttribute("style","z-index:100");
-        para.setAttribute("class","CodeMirror-line ")
-        // style="zoom:60%;"
-        para.innerHTML = `<img  src='D:\\笔记整理\\Java研修录\\Linux基础\\${result?result[2]:resultTag[1]}'   />`
-        element.appendChild(para)
+      let para = document.createElement("div");
+      para.setAttribute("style", "z-index:999; border-style:solid; border-color:black");
+      // style="zoom:60%;"
+      para.innerHTML = `<img  src='D:\\笔记整理\\Java研修录\\Linux基础\\${
+        result ? result[2] : resultTag[1]
+      }'   />`;
+      element.appendChild(para);
+
     }
-
-
-  })*/
+  });*/
   /*
   
   "mousedown", "dblclick", "touchstart", "contextmenu", "keydown", "keypress", "keyup", "cut", "copy", "paste", "dragstart", "dragenter", "dragover", "dragleave", "drop" 当CodeMirror处理此类DOM事件时触发。
@@ -202,7 +197,8 @@ onMounted(() => {
 
   cm.on("inputRead", () => {
     // console.log("inputRead");
-    cm.showHint();
+    // cm.showHint();
+     document.title = fileFullPath.value + "*";
   });
   store.commit("updateEditor", cm);
 });
