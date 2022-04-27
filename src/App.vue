@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import SplitPanel from "./components/SplitPanel.vue";
 import CodemiirrorEditor from "./components/CodemirrorEditor.vue";
-import TuiEditor from "./components/TuiEditor.vue";
+// import TuiEditor from "./components/TuiEditor.vue";
 
 import Side from "./views/Side.vue";
 
