@@ -5,7 +5,7 @@
 import { onMounted, watch, ref } from "vue";
 import { useStore } from "vuex";
 import "codemirror/lib/codemirror.css";
-
+// import "codemirror/theme/dracula.css";
 //@ts-ignore
 import CodeMirror from "codemirror";
 import "codemirror/mode/gfm/gfm";
@@ -22,18 +22,20 @@ require("codemirror/addon/selection/active-line.js");
 require("codemirror/addon/scroll/simplescrollbars.js");
 require("codemirror/addon/scroll/simplescrollbars.css");
 
-// 折叠
-require("codemirror/addon/fold/foldgutter.css");
-require("codemirror/addon/fold/foldcode");
-require("codemirror/addon/fold/foldgutter");
-require("codemirror/addon/fold/brace-fold");
-require("codemirror/addon/fold/comment-fold");
+//搜索功能
+// require("codemirror/addon/scroll/annotatescrollbar.js");
+// require("codemirror/addon/search/matchesonscrollbar.js");
+// require("codemirror/addon/search/match-highlighter.js");
+// require("codemirror/addon/search/jump-to-line.js");
+
+// require("codemirror/addon/dialog/dialog.js");
+// require("codemirror/addon/dialog/dialog.css");
+// require("codemirror/addon/search/searchcursor.js");
+// require("codemirror/addon/search/search.js");
+//代码提示
+// require("codemirror/addon/hint/show-hint");
 // 自动括号匹配功能
-require("codemirror/addon/edit/matchbrackets");
-require("codemirror/addon/scroll/annotatescrollbar.js");
-require("codemirror/addon/search/matchesonscrollbar.js");
-require("codemirror/addon/search/match-highlighter.js");
-require("codemirror/addon/search/jump-to-line.js");
+
 // 显示自动刷新
 require("codemirror/addon/display/autorefresh");
 //搜索功能
@@ -74,6 +76,17 @@ let option = {
   styleActiveLine: true, // 选中行高亮
   highlightFormatting: true, //md配置
   allowAtxHeaderWithoutSpace: true,
+
+  /*/ 代码提示功能
+  hintOptions: {
+    // 避免由于提示列表只有一个提示信息时，自动填充
+    completeSingle: false,
+    // 不同的语言支持从配置中读取自定义配置 sql语言允许配置表和字段信息，用于代码提示 CompleteEmoji.createHintFunc()
+    // hint: handleShowHint,
+  },*/
+
+
+
   //滚动条""
   scrollbarStyle: 'native'
 };
@@ -82,6 +95,18 @@ ipcRenderer.on("read-file-reply", (event: any, path: string, data: any) => {
   cm.setValue(data);
   document.title = "简单笔记-" + path;
   fileFullPath.value = document.title;
+
+/*
+
+  hmdReadLink: {
+    baseURI: "D:\\笔记整理\\Java研修录\\基础编程",
+  },
+ */
+ipcRenderer.on("read-file-reply", (event: any, path: string, data: any) => {
+  cm.setValue(data);
+  document.title = "简单笔记-"+path;
+  fileFullPath.value =  document.title;
+
 });
 
 ipcRenderer.on("set-lineNumber", (event, lineNumber) => {
@@ -97,7 +122,6 @@ onMounted(() => {
   cm = CodeMirror.fromTextArea(document.getElementById("editor"), option);
   // cm.replaceRange("<div> </div>", { line: 0, ch: 0 }, { line: 2, ch: 10 });
 
-  cm.on("change", function () { });
   /*
   cm.on("renderLine", (cm_: any, line: any, element: any) => {
     const result = line.text.match(/^!\[(.*)\]\((.*)\)/);
@@ -115,7 +139,7 @@ onMounted(() => {
     }
   });*/
   /*
-  
+
   "mousedown", "dblclick", "touchstart", "contextmenu", "keydown", "keypress", "keyup", "cut", "copy", "paste", "dragstart", "dragenter", "dragover", "dragleave", "drop" 当CodeMirror处理此类DOM事件时触发。
    */
   cm.on("mousedown", (cm_: any, event: any) => {
@@ -138,11 +162,11 @@ onMounted(() => {
     // }
     /*
         if (event.buttons === 1 && event.target.nodeName === "IMG") {
-    
+
           let pos = cm.getCursor();
-    
+
           let lineContent = cm.getLine(pos.line);
-    
+
           if (lineContent && (lineContent.match(/<img src="([^"]*?)"/) === null)) {
             let img = `<img src='D:\\笔记整理\\Java研修录\\Linux基础\\'style="zoom:60%;"/>`
             cm_.replaceRange(img, { line: 5, ch: 0 })
@@ -154,7 +178,7 @@ onMounted(() => {
               });
             }, 20);
           }
-    
+
         }*/
   });
   cm.addKeyMap({
@@ -179,7 +203,7 @@ onMounted(() => {
   cm.on("inputRead", () => {
     // console.log("inputRead");
     // cm.showHint();
-    document.title = fileFullPath.value + "*";
+  document.title = fileFullPath.value + "*";
   });
   store.commit("updateEditor", cm);
 });
@@ -187,12 +211,9 @@ onMounted(() => {
 
 <style lang="scss">
 .CodeMirror {
-  font-family:  "Fira Code",Consolas,  Menlo, Monaco, "Lucida Console",
-    "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono",
-    monospace, serif !important;
- 
+  font-family: "Fira Code", Consolas, Menlo, Monaco, "Lucida Console", "Liberation Mono",
+    "DejaVu Sans Mono", "Bitstream Vera Sans Mono", monospace, serif !important;
+
   height: 100% !important;
 }
-
-
 </style>
