@@ -12,15 +12,21 @@
   },
   "main": "background.js",
   "dependencies": {
+    "@tiptap/extension-blockquote": "^2.0.0-beta.26",
+    "@tiptap/extension-bullet-list": "^2.0.0-beta.26",
     "@tiptap/extension-code-block-lowlight": "^2.0.0-beta.68",
     "@tiptap/extension-document": "^2.0.0-beta.15",
     "@tiptap/extension-highlight": "^2.0.0-beta.33",
+    "@tiptap/extension-list-item": "^2.0.0-beta.20",
+    "@tiptap/extension-ordered-list": "^2.0.0-beta.27",
     "@tiptap/extension-paragraph": "^2.0.0-beta.23",
     "@tiptap/extension-text": "^2.0.0-beta.15",
     "@tiptap/extension-typography": "^2.0.0-beta.20",
     "@tiptap/starter-kit": "^2.0.0-beta.184",
     "@tiptap/vue-3": "^2.0.0-beta.91",
     "codemirror": "^5.65.2",
+    "install": "^0.13.0",
+    "npm": "^8.9.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
