@@ -9,17 +9,18 @@
       </div>
     </template>
     <template v-slot:after>
-      <codemiirror-editor></codemiirror-editor>
+      <!-- <codemiirror-editor></codemiirror-editor> -->
       <!-- <tui-editor></tui-editor> -->
+      <tiptap />
     </template>
   </split-panel>
 </template>
 
 <script setup lang="ts">
 import SplitPanel from "./components/SplitPanel.vue";
-import CodemiirrorEditor from "./components/CodemirrorEditor.vue";
+// import CodemiirrorEditor from "./components/CodemirrorEditor.vue";
 // import TuiEditor from "./components/TuiEditor.vue";
-
+import Tiptap from "@/components/Tiptap.vue";
 import Side from "./views/Side.vue";
 
 import { onMounted, ref } from "vue";
